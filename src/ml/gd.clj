@@ -10,11 +10,10 @@
 (defn gradient-descent [hf X y theta & options]
   (let [opts (when options (apply assoc {} options))
         alpha (or (:alpha opts) 0.01)
-        num-iters (or (:num-iters opts) 1000)]
-  (loop [i 0 theta theta]
-;    (println theta)
-    (if (= i num-iters)
-      theta
-      (recur (inc i) (minus theta (mult alpha (gradient hf X y theta))))))))
+        lambda (into [0] (repeat (dec (nrow theta)) (/ (or (:lambda opts) 0) (nrow y))))]
+    (loop [i (or (:num-iters opts) 1000) theta theta]
+      (if (zero? i)
+        theta
+        (recur (dec i) (minus theta (mult alpha (plus (gradient hf X y theta) (mult theta lambda)))))))))
 
 
