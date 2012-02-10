@@ -18,7 +18,7 @@
 (println "initial cost" (logistic-cost X y initial-theta))
 
 (def theta (gradient-descent logistic-hypothesis X y initial-theta :alpha 0.05 :num-iters 1000 :lambda 100))
-(println "accuracy" (/ (count (filter true? (map = (predict (logistic-hypothesis theta X)) y))) (double m)))
+(println "accuracy" (/ (count (filter true? (map = (prediction (logistic-hypothesis theta X)) y))) (double m)))
 
 (defn linspace [a b n]
   (let [d (/ (- b a) (dec n))]

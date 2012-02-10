@@ -12,4 +12,4 @@
   (let [h (logistic-hypothesis theta X) m (nrow y)]
     (/ (reduce - (map #(if (zero? %2) (log (- 1 %1)) (log %1)) h y)) m)))
 
-(defn predict [v] (map #(if (< % 0.5) 0 1) v))
+(defn prediction [v] (map #(if (< % 0.5) 0 1) v))

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="jmatio">
+    <CLASSES>
+      <root url="jar:///usr/local/share/java/jmatio-071005/lib/jamtio.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file:///usr/local/share/java/jmatio-071005/doc" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>
