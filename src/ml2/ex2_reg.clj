@@ -3,7 +3,7 @@
         (ml util gd logistic)))
 
 (def data (to-matrix (read-dataset "src/ml2/ex2data2.txt")))
-(def y (sel data :cols 2))
+(def y (map int (sel data :cols 2)))
 (def m (nrow y))
 
 ; add polynomial features
@@ -14,11 +14,11 @@
 
 (def X (map-features (sel data :cols 0) (sel data :cols 1)))
 
-(def initial-theta (into [] (repeat (ncol X) 0)))
+(def initial-theta (zeroes (ncol X)))
 (println "initial cost" (logistic-cost X y initial-theta))
 
 (def theta (gradient-descent logistic-hypothesis X y initial-theta :alpha 0.05 :num-iters 1000 :lambda 100))
-(println "accuracy" (/ (count (filter true? (map = (prediction (logistic-hypothesis theta X)) (map int y)))) (double m)))
+(println "accuracy" (double (accuracy (prediction (logistic-hypothesis theta X)) y)))
 
 (defn linspace [a b n]
   (let [d (/ (- b a) (dec n))]
@@ -36,9 +36,9 @@
           (> 0 (* v (grid-value row (inc col)))))
       [(grid row) (grid col)])))
 
-(def zeroes (remove nil? (for [row (range gmax) col (range gmax)] (crossing z row col))))
+(def crossings (remove nil? (for [row (range gmax) col (range gmax)] (crossing z row col))))
 
 (doto
   (scatter-plot (sel X :cols 1) (sel X :cols 2) :group-by y :x-label "Microchip Test 1" :y-label "Microchip Test 2" :legend true)
-  (add-points (map first zeroes) (map second zeroes) :series-label "Decision Boundary")
+  (add-points (map first crossings) (map second crossings) :series-label "Decision Boundary")
   (view))

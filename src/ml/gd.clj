@@ -1,13 +1,14 @@
 ; https://gist.github.com/1737468
 (ns ml.gd
   (:gen-class)
+  (:import (incanter Matrix))
   (:use (incanter core)))
 
-(defn- gradients [hf X y theta]
+(defn- ^Matrix gradients [hf ^Matrix X ^Matrix y theta]
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]
-    (map #(/ (mmult % d) m) xt)))
+    (div (mmult xt d) m)))
 
-(defn gradient-descent [hf X y theta & options]
+(defn gradient-descent [hf ^Matrix X ^Matrix y theta & options]
   (let [opts (when options (apply assoc {} options))
         alpha (or (:alpha opts) 0.01)
         lambda (into [0] (repeat (dec (nrow theta)) (/ (or (:lambda opts) 0) (nrow y))))]

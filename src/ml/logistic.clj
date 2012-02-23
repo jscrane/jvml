@@ -1,15 +1,17 @@
 (ns ml.logistic
-  (:gen-class)
-  (:use (incanter core)))
+  (:gen-class )
+  (:import (incanter Matrix))
+  (:use (incanter core) (ml util)))
 
-(defn sigmoid [^Double z] (/ 1 (+ 1 (exp (- z)))))
+(defn sigmoid [^double z] (/ 1 (+ 1 (exp (- z)))))
 
-(defn logistic-hypothesis [theta X]
-  (let [m (mmult X theta)]
-    (if (matrix? m) (map sigmoid m) (sigmoid m))))
+(defn logistic-hypothesis [^Matrix theta ^Matrix X]
+  (matrix-map sigmoid (mmult X theta)))
 
-(defn logistic-cost [X y theta]
-  (let [h (logistic-hypothesis theta X) m (nrow y)]
-    (/ (reduce - (map #(if (zero? %2) (log (- 1 %1)) (log %1)) h y)) m)))
+(defn logistic-cost [^Matrix X ^Matrix y ^Matrix theta]
+  (let [h (logistic-hypothesis theta X) m (nrow y) o (ones m)]
+    (- (/ (sum (plus (mult (log h) y) (mult (minus o y) (log (minus o h))))) m))))
 
-(defn prediction [^Double v] (map #(if (< % 0.5) 0 1) v))
+(defn prediction [v] (map #(if (< % 0.5) 0 1) v))
+
+(defn accuracy [p y] (/ (count (filter true? (map = p y))) (nrow y)))

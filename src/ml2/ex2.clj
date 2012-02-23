@@ -2,15 +2,15 @@
   (:use (incanter core charts io) (ml util gd logistic)))
 
 (def data (to-matrix (read-dataset "src/ml2/ex2data1.txt")))
-(def y (sel data :cols 2))
+(def y (map int (sel data :cols 2)))
 (def norm (feature-normalize (sel data :except-cols 2)))
 (def X (add-intercept (:data norm)))
 
-(def theta (gradient-descent logistic-hypothesis X y [0 0 0] :alpha 0.05 :num-iters 20000))
+(def theta (gradient-descent logistic-hypothesis X y (zeroes 3) :alpha 0.05 :num-iters 20000))
 
 (println "cost" (logistic-cost X y theta))
 (println "predict" (logistic-hypothesis theta (trans (into [1] (div (minus [45 85] (:mean norm)) (:sigma norm))))))
-(println "accuracy" (/ (count (filter true? (map = (prediction (logistic-hypothesis theta X)) (map int y)))) (double (nrow y))))
+(println "accuracy" (accuracy (prediction (logistic-hypothesis theta X)) y))
 
 (def plot (scatter-plot (sel X :cols 1) (sel X :cols 2) :group-by y :x-label "Admitted" :y-label "Not Admitted"))
 
