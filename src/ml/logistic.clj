@@ -3,10 +3,9 @@
   (:import (incanter Matrix))
   (:use (incanter core) (ml util)))
 
-(defn sigmoid [^double z] (/ 1 (+ 1 (exp (- z)))))
+(defn sigmoid [^Matrix z] (div 1 (plus 1 (exp (minus z)))))
 
-(defn logistic-hypothesis [^Matrix theta ^Matrix X]
-  (matrix-map sigmoid (mmult X theta)))
+(defn logistic-hypothesis [^Matrix theta ^Matrix X] (sigmoid (mmult X theta)))
 
 (defn logistic-cost [^Matrix X ^Matrix y ^Matrix theta]
   (let [h (logistic-hypothesis theta X) m (nrow y) o (ones m)]

@@ -1,16 +1,6 @@
 (ns ml3.ex3
-  (:use (incanter core optimize)
-        (ml util logistic gd))
-  (:import (com.jmatio.io MatFileReader)))
-
-(def into-vector (partial into []))
-
-(defn make-matrix [array2d]
-  (matrix (map into-vector (map into-vector array2d))))
-
-(defn read-dataset-mat5 [file]
-  (let [content (.getContent (MatFileReader. file))]
-    (reduce (fn [d k] (assoc d (keyword k) (make-matrix (-> content (.get k) .getArray)))) {} (keys content))))
+  (:use (incanter core)
+        (ml util logistic gd matlab)))
 
 (def d (read-dataset-mat5 "src/ml3/ex3data1.mat"))
 
@@ -24,18 +14,19 @@
       [] (range 1 (inc num-labels)))))
 
 (def y (map int (d :y )))
-(def all-theta (matrix (one-vs-all (d :X ) y 10 0.1 50)))
+(def all-theta (matrix (one-vs-all (d :X ) y 10 0.1 1000)))
 
 ; X is 5000x400, all-theta is 10x401, s is 5000x10
 (def s (mmult (add-intercept (d :X )) (trans all-theta)))
 
 (defn max-index [coll]
-  (first (reduce #(if (> (second %1) (second %2)) %1 %2) (map-indexed vector coll))))
+  (inc (first (reduce #(if (> (second %1) (second %2)) %1 %2) (map-indexed vector coll)))))
 
-(println "accuracy" (double (accuracy (map #(inc (max-index %)) (to-vect s)) y)))
+(println "accuracy" (double (accuracy (map max-index (to-vect s)) y)))
 
 ; iters   accy
 ;  5       65%
 ;  50     75%
 ;  200   80%
 ;  500   82%
+; 1000  84%
