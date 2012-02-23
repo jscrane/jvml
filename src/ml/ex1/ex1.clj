@@ -1,10 +1,10 @@
 ; https://gist.github.com/1737472
 ; (see https://gist.github.com/1724396 for a version using incanter's non-linear-model)
-(ns ml1.ex1
+(ns ml.ex1.ex1
   (:use (incanter core charts io)
         (ml util gd linear)))
 
-(def data (to-matrix (read-dataset "src/ml1/ex1data1.txt")))
+(def data (to-matrix (read-dataset "ex1data1.txt")))
 (def y (sel data :cols 1))
 (def X (add-intercept (sel data :cols 0)))
 

@@ -1,8 +1,8 @@
-(ns ml3.ex3
+(ns ml.ex3.ex3
   (:use (incanter core)
         (ml util logistic gd matlab)))
 
-(def d (read-dataset-mat5 "src/ml3/ex3data1.mat"))
+(def d (read-dataset-mat5 "ex3data1.mat"))
 
 (defn one-vs-all [X y num-labels lambda iters]
   (let [m (nrow X) X (add-intercept X) initial-theta (zeroes (ncol X))]
@@ -14,7 +14,7 @@
       [] (range 1 (inc num-labels)))))
 
 (def y (map int (d :y )))
-(def all-theta (matrix (one-vs-all (d :X ) y 10 0.1 1000)))
+(def all-theta (matrix (one-vs-all (d :X ) y 10 0.1 200)))
 
 ; X is 5000x400, all-theta is 10x401, s is 5000x10
 (def s (mmult (add-intercept (d :X )) (trans all-theta)))

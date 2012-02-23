@@ -1,8 +1,8 @@
 ; (see https://gist.github.com/1724426 for an implementation using linear-model)
-(ns ml1.ex1-multi
+(ns ml.ex1.ex1-multi
   (:use (incanter core io) (ml util gd linear)))
 
-(def data (to-matrix (read-dataset "src/ml1/ex1data2.txt")))
+(def data (to-matrix (read-dataset "ex1data2.txt")))
 
 (let [{X :data mu :mean sigma :sigma} (feature-normalize (sel data :except-cols 2))
       y (sel data :cols 2)

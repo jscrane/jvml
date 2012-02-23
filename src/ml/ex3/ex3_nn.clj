@@ -1,9 +1,9 @@
-(ns ml3.ex3-nn
+(ns ml.ex3.ex3-nn
   (:use (incanter core)
         (ml util logistic matlab)))
 
-(def d (read-dataset-mat5 "src/ml3/ex3data1.mat"))
-(def w (read-dataset-mat5 "src/ml3/ex3weights.mat"))
+(def d (read-dataset-mat5 "ex3data1.mat"))
+(def w (read-dataset-mat5 "ex3weights.mat"))
 
 (defn max-index [coll]
   (inc (first (reduce #(if (> (second %1) (second %2)) %1 %2) (map-indexed vector coll)))))

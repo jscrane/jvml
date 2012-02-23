@@ -1,8 +1,8 @@
-(ns ml2.ex2-reg
+(ns ml.ex2.ex2-reg
   (:use (incanter core charts io)
         (ml util gd logistic)))
 
-(def data (to-matrix (read-dataset "src/ml2/ex2data2.txt")))
+(def data (to-matrix (read-dataset "ex2data2.txt")))
 (def y (map int (sel data :cols 2)))
 (def m (nrow y))
 
