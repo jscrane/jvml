@@ -3,7 +3,7 @@
   (:gen-class)
   (:use (incanter core)))
 
-(defn gradient [hf X y theta]
+(defn- gradients [hf X y theta]
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]
     (map #(/ (mmult % d) m) xt)))
 
@@ -14,6 +14,6 @@
     (loop [i (or (:num-iters opts) 1000) theta theta]
       (if (zero? i)
         theta
-        (recur (dec i) (minus theta (mult alpha (plus (gradient hf X y theta) (mult theta lambda)))))))))
+        (recur (dec i) (minus theta (mult alpha (plus (gradients hf X y theta) (mult theta lambda)))))))))
 
 

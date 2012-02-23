@@ -2,7 +2,7 @@
   (:gen-class)
   (:use (incanter core)))
 
-(defn sigmoid [z] (/ 1 (+ 1 (exp (- z)))))
+(defn sigmoid [^Double z] (/ 1 (+ 1 (exp (- z)))))
 
 (defn logistic-hypothesis [theta X]
   (let [m (mmult X theta)]
@@ -12,4 +12,4 @@
   (let [h (logistic-hypothesis theta X) m (nrow y)]
     (/ (reduce - (map #(if (zero? %2) (log (- 1 %1)) (log %1)) h y)) m)))
 
-(defn prediction [v] (map #(if (< % 0.5) 0 1) v))
+(defn prediction [^Double v] (map #(if (< % 0.5) 0 1) v))
