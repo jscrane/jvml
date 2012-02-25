@@ -7,7 +7,7 @@
 (def norm (feature-normalize (sel data :except-cols 2)))
 (def X (add-intercept (:data norm)))
 
-(def theta (gradient-descent logistic-hypothesis X y (zeroes 3) :alpha 0.05 :num-iters 20000))
+(def theta (gradient-descent (cost-fn logistic-hypothesis X y) (zeroes 3) :alpha 0.05 :num-iters 20000))
 
 (println "cost" (logistic-cost X y theta))
 (println "predict" (logistic-hypothesis theta (trans (into [1] (div (minus [45 85] (:mean norm)) (:sigma norm))))))

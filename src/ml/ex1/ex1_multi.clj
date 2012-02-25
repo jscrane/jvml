@@ -6,7 +6,7 @@
 
 (let [{X :data mu :mean sigma :sigma} (feature-normalize (sel data :except-cols 2))
       y (sel data :cols 2)
-      theta (gradient-descent linear-hypothesis (add-intercept X) y [0 0 0] :alpha 1 :num-iters 100)
+      theta (gradient-descent (cost-fn linear-hypothesis (add-intercept X) y) [0 0 0] :alpha 1 :num-iters 100)
       data [1650 3]]
   (println "gd theta" theta)
   (println "gd predict" (linear-hypothesis theta (trans (into [1] (div (minus data mu) sigma))))))

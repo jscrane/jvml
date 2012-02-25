@@ -17,7 +17,7 @@
 (def initial-theta (zeroes (ncol X)))
 (println "initial cost" (logistic-cost X y initial-theta))
 
-(def theta (gradient-descent logistic-hypothesis X y initial-theta :alpha 0.05 :num-iters 5000 :lambda 1))
+(def theta (gradient-descent (cost-fn logistic-hypothesis X y 1) initial-theta :alpha 0.05 :num-iters 5000))
 (println "accuracy" (double (accuracy (prediction (logistic-hypothesis theta X)) y)))
 
 (defn linspace [a b n]

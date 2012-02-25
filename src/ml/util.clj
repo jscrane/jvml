@@ -16,3 +16,6 @@
 (defn zeroes [^long n] (repeats n 0))
 
 (defn ones [^long n] (repeats n 1))
+
+(defn max-index [coll]
+  (inc (first (reduce #(if (> (second %1) (second %2)) %1 %2) (map-indexed vector coll)))))

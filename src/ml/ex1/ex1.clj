@@ -10,7 +10,7 @@
 
 (println "initial cost" (linear-cost X y [0 0]))
 
-(def theta (gradient-descent linear-hypothesis X y [0 0] :alpha 0.01 :num-iters 1500))
+(def theta (gradient-descent (cost-fn linear-hypothesis X y) [0 0] :alpha 0.01 :num-iters 1500))
 (println "optimized cost" (linear-cost X y theta) theta)
 
 (println "predict1" (* (linear-hypothesis theta (trans [1 3.5])) 10000))
