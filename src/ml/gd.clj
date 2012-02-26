@@ -5,11 +5,11 @@
 
 (defn gradient-descent [cost-fn initial-theta & options]
   (let [opts (when options (apply assoc {} options))
-        alpha (or (:alpha opts) 0.01)]
-    (loop [i (or (:num-iters opts) 1000) theta initial-theta]
-      (if (zero? i)
-        theta
-        (recur (dec i) (minus theta (mult alpha (:grad (cost-fn theta)))))))))
+        alpha (or (:alpha opts) 0.01)
+        num-iters (or (:num-iters opts) 1000)
+        mf (fn [theta] (minus theta (mult alpha (:grad (cost-fn theta)))))
+        vf (fn [theta] (map #(minus %1 (mult alpha %2)) theta (:grad (cost-fn theta))))]
+    (first (drop num-iters (iterate (if (instance? Matrix initial-theta) mf vf) initial-theta)))))
 
 (defn- ^Matrix gradients [hf ^Matrix X ^Matrix y theta]
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]
