@@ -43,3 +43,21 @@
     (xy-plot ords training :x-label "Number of examples" :y-label "Error" :legend true :series-label "Training")
     (add-lines ords validation :series-label "Validation")
     (view)))
+
+(defn polynomial-features [X p]
+  (apply bind-columns (map #(pow X %) (range 1 (inc p)))))
+
+(let [{Xp :data mean :mean sigma :sigma} (feature-normalize (polynomial-features (:X d) 8))
+      Xpoly (add-intercept Xp)
+      lambda 0]
+  (doto
+    (scatter-plot (:X d) y :x-label "Change in water level" :y-label "Water flowing out of the dam")
+    (add-lines (:X d) (mmult Xpoly (train-linear-regression Xpoly y lambda)))
+    (view))
+  (let [Xpoly-val (add-intercept (normalize (polynomial-features (:Xval d) 8) mean sigma))
+        [training validation] (learning-curves Xpoly y Xpoly-val (:yval d) lambda)
+        ords (range 2 (inc (nrow Xpoly)))]
+    (doto
+      (xy-plot ords training :x-label "Number of examples" :y-label "Error" :legend true :series-label "Training")
+      (add-lines ords validation :series-label "Validation")
+      (view))))

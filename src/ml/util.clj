@@ -1,5 +1,5 @@
 (ns ml.util
-  (:gen-class)
+  (:gen-class )
   (:import (incanter Matrix))
   (:use (incanter core stats)))
 
@@ -9,7 +9,11 @@
 
 (defn feature-normalize [^Matrix X]
   (let [m (nrow X) xt (trans X) mu (map mean xt) sigma (map std xt)]
-    { :data (div (minus X (conj-rows (repeat m mu))) (repeat m sigma)) :mean mu :sigma sigma}))
+    {:data (div (minus X (conj-rows (repeat m mu))) (repeat m sigma)) :mean (trans mu) :sigma (trans sigma)}))
+
+(defn normalize [v mu sigma]
+  (let [m (nrow v)]
+    (div (minus v (conj-rows (repeat m mu))) (repeat m sigma))))
 
 (defn- repeats [n x] (into [] (repeat n x)))
 
