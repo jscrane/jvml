@@ -10,5 +10,5 @@
 
 (defn normal-equation [X y]
   (let [Xt (trans X)]
-    (mmult (mmult (solve (mmult Xt X)) Xt) y)))
+    (mmult (solve (mmult Xt X)) Xt y)))
 

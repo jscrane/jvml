@@ -4,6 +4,8 @@
         [incanter.core :only (trans matrix)]
         [ml.ex4 :only (W X Y neural-net-cost-fn sigmoid-gradient)]))
 
+(def approx (approximately 1e-6))
+
 (deftest cost-function
   (is (approx 0.287629 (:cost ((neural-net-cost-fn X Y 0) [(:Theta1 W) (:Theta2 W)]))))
   (is (approx 0.383770 (:cost ((neural-net-cost-fn X Y 1) [(:Theta1 W) (:Theta2 W)]))))
@@ -18,5 +20,5 @@
         X (debug-matrix m input)
         Y (matrix (map #(boolean-vector labels %) (map #(inc (rem % labels)) (range 1 (inc m)))))]
     (is (approx 2.10095 (:cost ((neural-net-cost-fn X Y 0) [T1 T2]))))
-    (is (approx 2.14635 (:cost ((neural-net-cost-fn X Y 3) [T1 T2]))))))
+    (is (approx 2.14636 (:cost ((neural-net-cost-fn X Y 3) [T1 T2]))))))
 

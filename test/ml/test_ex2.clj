@@ -4,6 +4,8 @@
         [ml.ex2 :only (cost theta predict training-accuracy)]
         [ml.ex2-reg :only (reg-cost reg-accuracy)]))
 
+(def approx (approximately 1e-3))
+
 (deftest ex2
   (is (approx 0.693 (cost [0 0 0])))
   (is (approx 0.2035 (cost theta)))

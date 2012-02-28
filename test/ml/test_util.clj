@@ -1,5 +1,10 @@
-(ns ml.test-util)
+(ns ml.test-util
+  (:use (incanter core)))
 
-(defn approx
-  ([a b] (approx a b 0.001))
-  ([a b v] (> v (/ (- b a) b))))
+(defn- approx [v a b] (> v (Math/abs (/ (- b a) b))))
+
+(defn approximately [tol]
+  (fn [a b]
+    (if (matrix? b)
+      (every? true? (matrix-map #(approx tol %1 %2) a b))
+      (approx tol a b))))
