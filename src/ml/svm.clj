@@ -1,5 +1,6 @@
 (ns ml.svm
-  (:import (edu.berkeley.compbio.jlibsvm ImmutableSvmParameterGrid)
+  (:import (edu.berkeley.compbio.jlibsvm.kernel GaussianRBFKernel)
+           (edu.berkeley.compbio.jlibsvm ImmutableSvmParameterGrid)
            (edu.berkeley.compbio.jlibsvm.util SparseVector)))
 
 ; http://lilyx.net/2011/07/02/using-svm-support-vector-machine-from-clojure/
@@ -25,3 +26,5 @@
   (let [builder (ImmutableSvmParameterGrid/builder)]
     (set-all! builder {eps epsilon Cset #{C} kernelSet #{kernel}})
     (.build builder)))
+
+(defn gaussian-kernel [sigma] (GaussianRBFKernel. (float (/ 1 2 sigma sigma))))
