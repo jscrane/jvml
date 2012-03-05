@@ -38,5 +38,6 @@
 (let [crossings (remove nil? (for [row (range gmax) col (range gmax)] (crossing z row col)))]
   (doto
     (scatter-plot (sel X :cols 1) (sel X :cols 2) :group-by y :x-label "Microchip Test 1" :y-label "Microchip Test 2" :legend true)
+    ; can't add-lines because incanter has no way to turn off auto-sort on the XYSeries...
     (add-points (map first crossings) (map second crossings) :series-label "Decision Boundary")
     (view)))
