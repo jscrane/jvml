@@ -21,8 +21,10 @@
 
 (defn ones [^long n] (repeats n 1))
 
-(defn max-index [coll]
-  (inc (first (reduce #(if (> (second %1) (second %2)) %1 %2) (map-indexed vector coll)))))
+(defn indexes-of? [pred? coll]
+  (inc (first (reduce #(if (pred? (second %1) (second %2)) %1 %2) (map-indexed vector coll)))))
+
+(defn max-index [coll] (indexes-of? > coll))
 
 (defn boolean-vector [n i]
   (into [] (map #(if (= % i) 1 0) (range 1 (inc n)))))
