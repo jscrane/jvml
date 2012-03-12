@@ -1,4 +1,4 @@
-(ns ml.test-util
+(ns ml.testutil
   (:use (incanter core)))
 
 (defmulti approx (fn [v a b] (type b)))

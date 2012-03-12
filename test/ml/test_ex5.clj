@@ -1,6 +1,6 @@
 (ns ml.test-ex5
   (:use (clojure test)
-        (ml util test-util ex5)))
+        (ml util testutil ex5)))
 
 (def approx (approximately 1e-5))
 

@@ -1,6 +1,6 @@
 (ns ml.test-ex2
   (:use (clojure test)
-        (ml util test-util)
+        (ml util testutil)
         [ml.ex2 :only (cost theta predict training-accuracy)]
         [ml.ex2-reg :only (reg-cost reg-accuracy)]))
 

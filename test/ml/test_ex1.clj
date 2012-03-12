@@ -1,6 +1,6 @@
 (ns ml.test-ex1
   (:use (clojure test)
-        (ml test-util)
+        (ml testutil)
         [ml.ex1 :only (initial-cost predict-profit)]
         [ml.ex1-multi :only (predict-gradient-descent predict-normal-equation)]))
 

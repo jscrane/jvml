@@ -1,17 +1,17 @@
-(ns ml.test-ex7
+(ns ml.test-kmeans
   (:use (clojure test)
         (incanter core)
-        (ml matlab ex7 test-util)))
+        (ml matlab kmeans testutil)))
 
 (def X (:X (read-dataset-mat5 "data/ex7data2.mat")))
 
 (def centroids (matrix [[3 3] [6 2] [8 5]]))
 
 (deftest test-find-closest-centroids
-  (is (= 1 (find-closest-centroid (trans [1.8421 4.6076]) centroids)))
-  (is (= 3 (find-closest-centroid (trans [5.6586 4.8000]) centroids)))
-  (is (= 2 (find-closest-centroid (trans [6.3526 3.2909]) centroids)))
-  (is (= [1 3 2] (find-closest-centroids (matrix (take 3 X)) centroids))))
+  (is (= 0 (find-closest-centroid (trans [1.8421 4.6076]) centroids)))
+  (is (= 2 (find-closest-centroid (trans [5.6586 4.8000]) centroids)))
+  (is (= 1 (find-closest-centroid (trans [6.3526 3.2909]) centroids)))
+  (is (= [0 2 1] (find-closest-centroids (matrix (take 3 X)) centroids))))
 
 (deftest test-compute-centroids
   (let [approx (approximately 1e-6)

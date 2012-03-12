@@ -1,8 +1,6 @@
-(ns ml.ex7
-  (:use (ml util matlab)
-        (incanter core stats charts)))
-
-(def ds (read-dataset-mat5 "data/ex7data2.mat"))
+(ns ml.kmeans
+  (:use (ml util)
+        (incanter core stats)))
 
 (defn find-closest-centroid [v centroids]
   (let [dv (map #(minus v %) centroids) d (map #(mmult % (trans %)) dv)]
@@ -15,7 +13,7 @@
   (map mean (trans (remove nil? (map #(if (= k %2) %1) X idx)))))
 
 (defn compute-centroids [X idx k]
-  (matrix (map #(compute-centroid X idx %) (range 1 (inc k)))))
+  (matrix (map #(compute-centroid X idx %) (range k))))
 
 (defn kmeans [X centroids]
   (let [k (nrow centroids)
@@ -28,10 +26,7 @@
       centroids
       (recur (dec i) (kmeans X centroids)))))
 
-(let [X (:X ds)
-      centroids (run-kmeans X [[3 3] [6 2] [8 5]] 10)
-      idx (find-closest-centroids X centroids)]
-  (doto
-    (scatter-plot (sel X :cols 0) (sel X :cols 1) :group-by idx)
-    (add-points (map first centroids) (map second centroids))
-    (view)))
+(defn init-centroids [X k]
+  (sel X :rows (take k (permute (range (nrow X))))))
+
+

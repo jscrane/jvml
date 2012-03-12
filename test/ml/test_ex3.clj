@@ -1,6 +1,6 @@
 (ns ml.test-ex3
   (:use (clojure test)
-        (ml test-util)
+        (ml testutil)
         [ml.ex3 :only (one-vs-all-accuracy)]
         [ml.ex3-nn :only (nn-accuracy)]))
 

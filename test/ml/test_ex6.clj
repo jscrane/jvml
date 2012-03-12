@@ -1,6 +1,6 @@
 (ns ml.test-ex6
   (:use (clojure test)
-        (ml test-util ex6b ex6-spam)))
+        (ml testutil ex6b ex6-spam)))
 
 (def approx (approximately 1e-5))
 

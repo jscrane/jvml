@@ -1,6 +1,6 @@
 (ns ml.test-ex4
   (:use (clojure test)
-        (ml util test-util)
+        (ml util testutil)
         [incanter.core :only (trans matrix)]
         [ml.ex4 :only (W X Y neural-net-cost-fn sigmoid-gradient)]))
 
