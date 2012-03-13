@@ -4,19 +4,6 @@
   (:use (ml matlab kmeans)
         (incanter core charts)))
 
-;(let [A (div (:A (read-dataset-mat5 "data/bird_small.mat")) 255)
-;      X (matrix (vectorize A) 3)
-;      k 16
-;      centroids (run-kmeans X (init-centroids X k) 10)
-;      idx (find-closest-centroids X centroids)
-;      r (matrix (into [] (map #(nth centroids %) idx)))
-;      buf (int-array (map (fn[[r g b]] (int (+ (* r 65536) (* g 256) b))) (partition 3 (vectorize (mult r 255)))))
-;      width (nrow A) height (ncol A)
-;      image (BufferedImage. width height BufferedImage/TYPE_INT_RGB)]
-;  (doto (scatter-plot)
-;    (add-image 0 0 (do ((.setPixels (.getData image) 0 0 width height buf)) image))
-;    (view)))
-
 (defn rgb [r g b] (int (+ (* r 65536) (* g 256) b)))
 
 (defn make-image [rows cols coll]
