@@ -24,7 +24,7 @@
 (defn indexes-of? [pred? coll]
   (first (reduce #(if (pred? (second %1) (second %2)) %1 %2) (map-indexed vector coll))))
 
-(defn max-index [coll] (map inc (indexes-of? > coll)))
+(defn max-index [coll] (inc (indexes-of? > coll)))
 
 (defn boolean-vector [n i]
   (into [] (map #(if (= % i) 1 0) (range 1 (inc n)))))

@@ -13,7 +13,7 @@
                 (conj all-theta theta)))
       [] (range 1 (inc num-labels)))))
 
-(defn one-vs-all-accuracy [lambda iters]
+(defn  one-vs-all-accuracy [lambda iters]
   (let [y (map int (d :y ))
         all-theta (matrix (one-vs-all (d :X ) y 10 lambda iters))
         s (mmult (add-intercept (d :X )) (trans all-theta))]
