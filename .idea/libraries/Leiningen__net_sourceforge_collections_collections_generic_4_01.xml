@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: net.sourceforge.collections:collections-generic:4.01">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

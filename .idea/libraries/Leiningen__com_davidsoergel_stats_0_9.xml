@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: com.davidsoergel:stats:0.9">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/davidsoergel/stats/0.9/stats-0.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

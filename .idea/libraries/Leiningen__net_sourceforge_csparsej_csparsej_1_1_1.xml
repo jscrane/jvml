@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: net.sourceforge.csparsej:csparsej:1.1.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/csparsej/csparsej/1.1.1/csparsej-1.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

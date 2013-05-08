@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: com.github.rwl:COLAMDJ:1.0.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/rwl/COLAMDJ/1.0.1/COLAMDJ-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

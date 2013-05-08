@@ -3,7 +3,8 @@
         (incanter core stats)))
 
 (defn find-closest-centroid [v centroids]
-  (let [dv (map #(minus v %) centroids) d (map #(mmult % (trans %)) dv)]
+  (let [dv (map #(minus v %) centroids)
+        d (map #(mmult % (trans %)) dv)]
     (indexes-of? < d)))
 
 (defn find-closest-centroids [X centroids]
@@ -20,11 +21,8 @@
         idx (find-closest-centroids X centroids)]
     (compute-centroids X idx k)))
 
-(defn run-kmeans [X initial-centroids max-iters]
-  (loop [i max-iters centroids (matrix initial-centroids)]
-    (if (zero? i)
-      centroids
-      (recur (dec i) (kmeans X centroids)))))
+(defn run-kmeans [X initial-centroids n]
+  (first (drop n (iterate #(kmeans X %) (matrix initial-centroids)))))
 
 (defn init-centroids [X k]
   (sel X :rows (take k (permute (range (nrow X))))))

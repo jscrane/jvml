@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: incanter:jfreechart:1.0.13-no-gnujaxp">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/incanter/jfreechart/1.0.13-no-gnujaxp/jfreechart-1.0.13-no-gnujaxp.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

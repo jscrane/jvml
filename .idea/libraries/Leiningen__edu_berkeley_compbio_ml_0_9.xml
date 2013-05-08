@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: edu.berkeley.compbio:ml:0.9">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/edu/berkeley/compbio/ml/0.9/ml-0.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

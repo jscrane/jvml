@@ -3,6 +3,3 @@ in order to learn Incanter and explore Machine Learning algorithms.
 
 Prerequisites:
 * lein
-* lein-localrepo (lein plugin install lein-localrepo "0.3")
-* jmatio Update 2 (http://sourceforge.net/projects/jmatio/) added to a local repository
-  (lein localrepo install /usr/local/share/java/jmatio-071005/lib/jamtio.jar com.jmatio/jmatio "071005")
