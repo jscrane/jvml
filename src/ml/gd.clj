@@ -15,10 +15,9 @@
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]
     (div (mmult xt d) m)))
 
-(defn cost-fn
-  ([hypothesis-fn ^Matrix X ^Matrix y]
-    (fn [theta] {:grad (linear-gradient hypothesis-fn X y theta)}))
+(defn cost-fn [hypothesis-fn ^Matrix X ^Matrix y]
+  (fn [theta] {:grad (linear-gradient hypothesis-fn X y theta)}))
 
-  ([hypothesis-fn ^Matrix X ^Matrix y lambda]
-    (let [lambda (into [0] (repeat (dec (ncol X)) (/ lambda (nrow y))))]
-      (fn [theta] {:grad (plus (linear-gradient hypothesis-fn X y theta) (mult theta lambda))}))))
+(defn reg-cost-fn [hypothesis-fn ^Matrix X ^Matrix y lambda]
+  (let [lambda (into [0] (repeat (dec (ncol X)) (/ lambda (nrow y))))]
+    (fn [theta] {:grad (plus (linear-gradient hypothesis-fn X y theta) (mult theta lambda))})))

@@ -10,9 +10,9 @@
 
 (defn cost [theta] (logistic-cost X y theta))
 
-(defn predict [scores] (logistic-hypothesis theta (trans (into [1] (normalize scores (:mean norm) (:sigma norm))))))
+(defn predict [scores] (logistic-hypothesis theta (trans (into [1] (normalize (vector scores) (:mean norm) (:sigma norm))))))
 
-(defn training-accuracy [] (accuracy (prediction (logistic-hypothesis theta X)) y))
+(defn training-accuracy [] (double (accuracy (prediction (logistic-hypothesis theta X)) y)))
 
 (defn line-y [theta x]
   (let [[t0 t1 t2] theta]

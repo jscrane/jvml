@@ -14,4 +14,6 @@
 
 (deftest ex2-reg
   (is (approx 0.693 (reg-cost (zeroes 28))))
-  (is (approx 0.83 (reg-accuracy))))
+  (is (approx 0.83 (reg-accuracy 1)))
+  (is (approx 0.746 (reg-accuracy 10)))
+  (is (approx 0.61 (reg-accuracy 100))))

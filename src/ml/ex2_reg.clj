@@ -13,29 +13,35 @@
       (apply bind-columns (for [i (range 1 7) j (range 0 (inc i))] (mult (pow x1 (- i j)) (pow x2 j)))))))
 
 (def X (map-features (sel data :cols 0) (sel data :cols 1)))
-(def initial-theta (zeroes (ncol X)))
-(def theta (gradient-descent (cost-fn logistic-hypothesis X y 1) initial-theta :alpha 0.05 :num-iters 5000))
 
-(defn reg-cost [theta] (logistic-cost X y theta))
-(defn reg-accuracy [] (double (accuracy (prediction (logistic-hypothesis theta X)) y)))
+(defn optimize [X y lambda]
+  (let [initial-theta (zeroes (ncol X))]
+    (gradient-descent (reg-cost-fn logistic-hypothesis X y lambda) initial-theta :alpha 0.05 :num-iters 5000)))
 
-(defn linspace [a b n]
+(defn reg-cost [theta]
+  (logistic-cost X y theta))
+
+(defn reg-accuracy [lambda]
+  (let [theta (optimize X y lambda)]
+    (double (accuracy (prediction (logistic-hypothesis theta X)) y))))
+
+(defn- linspace [a b n]
   (let [d (/ (- b a) (dec n))]
     (range a (+ b (/ d 2)) d)))
 
 (def gmax 50)
 (def grid (into [] (linspace -1 1.5 gmax)))
 
-(def z (into [] (for [u grid v grid] (mmult (map-features [u] [v]) theta))))
-
-(defn crossing [z row col]
+(defn- crossing [z row col]
   (let [grid-value (fn [row col] (if (or (= row gmax) (= col gmax)) 0 (z (+ (* row gmax) col))))
         v (grid-value row col)]
     (if (or (> 0 (* v (grid-value (inc row) col)))
           (> 0 (* v (grid-value row (inc col)))))
       [(grid row) (grid col)])))
 
-(let [crossings (remove nil? (for [row (range gmax) col (range gmax)] (crossing z row col)))]
+(let [theta (optimize X y 1)
+      z (into [] (for [u grid v grid] (mmult (map-features [u] [v]) theta)))
+      crossings (remove nil? (for [row (range gmax) col (range gmax)] (crossing z row col)))]
   (doto
     (scatter-plot (sel X :cols 1) (sel X :cols 2) :group-by y :x-label "Microchip Test 1" :y-label "Microchip Test 2" :legend true)
     ; can't add-lines because incanter has no way to turn off auto-sort on the XYSeries...

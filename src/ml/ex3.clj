@@ -8,7 +8,7 @@
   (let [m (nrow X) X (add-intercept X) initial-theta (zeroes (ncol X))]
     (reduce (fn [all-theta c]
               (let [samples (into [] (map #(if (= % c) 1 0) y))
-                    theta (gradient-descent (cost-fn logistic-hypothesis X samples lambda) initial-theta :num-iters iters)]
+                    theta (gradient-descent (reg-cost-fn logistic-hypothesis X samples lambda) initial-theta :num-iters iters)]
                 (println c (logistic-cost X samples theta))
                 (conj all-theta theta)))
       [] (range 1 (inc num-labels)))))
