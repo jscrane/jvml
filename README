@@ -1,5 +1,13 @@
 A reimplementation of the exercises from the Stanford ML course
+(https://www.coursera.org/course/ml ),
 in order to learn Incanter and explore Machine Learning algorithms.
+
+The layout of this repo is roughly as follows:
+* src/ml/ex[n].clj sets up the exercise reading data
+  (along the same lines as the original Octave ones)
+* test/ml/test-ex[n].clj verifies that the exercise got the results
+  expected in the exercise documentation
+* other files are library files, shared among the exercises
 
 Prerequisites:
 * lein
