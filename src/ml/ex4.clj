@@ -11,13 +11,13 @@
 (defn sigmoid-gradient [z] (let [s (sigmoid z)] (mult s (minus 1 s))))
 
 (defn neural-net-cost-fn [X Y lambda]
-  (let [m (nrow Y) a1 (add-intercept X)]
+  (let [m (nrow Y) a1 (add-intercept X) m1Y (minus 1 Y)]
     (fn [[Theta1 Theta2]]
       (let [z2 (mmult a1 (trans Theta1))
             a2 (add-intercept (sigmoid z2))
             z3 (mmult a2 (trans Theta2))
             a3 (sigmoid z3)
-            cost (sum (map sum (plus (mult Y (log a3)) (mult (minus 1 Y) (log (minus 1 a3))))))
+            cost (sum (map sum (plus (mult Y (log a3)) (mult m1Y (log (minus 1 a3))))))
             d3 (minus a3 Y)
             d2 (mult (sel (mmult d3 Theta2) :except-cols 0) (sigmoid-gradient z2))
             delta2 (mmult (trans d3) a2)
@@ -45,22 +45,13 @@
 
 (defn random-matrix [[nrow ncol] epsilon]
   (let [rand (random-seq epsilon)]
-    (matrix (for [r (range nrow)] (take ncol rand)))))
+    (matrix (partition ncol (take (* nrow ncol) rand)))))
 
-(time
-  (let [eps 0.12
-        T1 (random-matrix (dim (:Theta1 W)) eps)
-        T2 (random-matrix (dim (:Theta2 W)) eps)
-        [Theta1 Theta2] (gradient-descent (neural-net-cost-fn X Y 0.1) [T1 T2] :num-iters 5 :alpha 2.0)]
-    (println "theta1" Theta1)
-    (println "predict" (double (accuracy (predict Theta1 Theta2 X) y)))))
-
-; iter  %     s
-; 5     11   22
-; 25   32   117
-; 50   50   219
-; 100 57   456
-; 200 90   871
-; 400 94  1711
-; 800 97  3437
-; 1600 98 6937
+(comment
+  (time
+    (let [eps 0.12
+          T1 (random-matrix (dim (:Theta1 W)) eps)
+          T2 (random-matrix (dim (:Theta2 W)) eps)
+          [Theta1 Theta2] (gradient-descent (neural-net-cost-fn X Y 0.1) [T1 T2] :num-iters 50 :alpha 2.25)]
+      ;    (println "theta1" Theta1)
+      (println "predict" (double (accuracy (predict Theta1 Theta2 X) y))))))
