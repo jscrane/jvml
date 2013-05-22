@@ -11,4 +11,4 @@
             (evaluateCost [theta]
               (let [cost (cost-fn theta)]
                 (Tuple. (:cost cost) (:grad cost)))))
-          max-iter verbose)))
+          initial-theta max-iter verbose)))

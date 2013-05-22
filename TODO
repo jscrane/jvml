@@ -1,5 +1,3 @@
 * read-dataset-mat5 vs read-dataset
-* implement fmincg in clojure
-* use colt solver for optimization (really _learn_ the conjugate gradient method)
 * labels and legends wrong on xy-plots
 * ex6a, ex6b, ex6c plotting decision boundary

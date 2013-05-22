@@ -1,6 +1,6 @@
 (ns ml.ex4
   (:use (incanter core)
-        (ml util logistic gd matlab)))
+        (ml util logistic gd matlab fmincg)))
 
 (defn init-ex4 []
   (let [d (read-dataset-mat5 "data/ex3data1.mat")
@@ -32,7 +32,7 @@
             Theta2-reg (zero-first-column Theta2)
             reg (* lambda 0.5 (+ (sum (map sum-of-squares Theta1-reg)) (sum (map sum-of-squares Theta2-reg))))
             reg-cost (/ (- reg cost) m)]
-        (println reg-cost)
+                (println reg-cost)
         {:cost reg-cost
          :grad [(div (plus delta1 (mult lambda Theta1-reg)) m) (div (plus delta2 (mult lambda Theta2-reg)) m)]}))))
 
@@ -51,7 +51,7 @@
 ; 200   0.60  93.4%   262
 ; 400   0.52  95.1%   502
 ; 800   0.45  96.3%   1030
-(if *command-line-args*
+(comment
   (time
     (let [{:keys [Theta1 Theta2 X yb y]} (init-ex4)
           eps 0.25
@@ -60,21 +60,30 @@
           [Th1 Th2] (gradient-descent (neural-net-cost-fn X yb 1.0) [T1 T2] :max-iter 50 :alpha 2.25)]
       (println "predict" (double (accuracy (predict Th1 Th2 X) y))))))
 
-(comment
-  (defn unroll [v d1 d2]
-    (let [r1 (first d1) c1 (second d1) e1 (* r1 c1)
-          r2 (first d2) c2 (second d2)]
-      [(matrix (take e1 v) c1) (matrix (drop e1 v) c2)]))
+(defn- unroll [d1 d2 v]
+  (let [r1 (first d1) c1 (second d1) e1 (* r1 c1)
+        r2 (first d2) c2 (second d2)
+        a (seq (.toArray v))]
+    [(matrix (take e1 a) c1) (matrix (drop e1 a) c2)]))
 
-  (defn rollup [mats]
-    (into [] (mapcat flatten mats)))
+(defn- rollup [mats]
+  (.vectorize (matrix (mapcat flatten mats))))
 
-  (let [eps 0.25
-        T1 (random-matrix (dim (:Theta1 W)) eps)
-        T2 (random-matrix (dim (:Theta2 W)) eps)
-        nnf (neural-net-cost-fn X Y 1.0)
-        f (fn [theta] (:cost (nnf (unroll theta (dim T1) (dim T2)))))
-        fp (fn [theta] (rollup (:grad (nnf (unroll theta (dim T1) (dim T2))))))
-        ]
-    )
-  )
+; iter  cost  predict time
+; 50    0.95  87.2%   93
+; 100   0.61  93.3%   174
+; 200   0.50  95.0%   329
+; 400   0.41  96.9%   613
+; 800   0.37  98.3%   1176
+(if *command-line-args*
+  (time
+    (let [{:keys [Theta1 Theta2 X yb y]} (init-ex4)
+          eps 0.25
+          T1 (random-matrix (dim Theta1) eps)
+          T2 (random-matrix (dim Theta2) eps)
+          unroll (partial unroll (dim T1) (dim T2))
+          wrapper (fn [theta]
+                    (let [{:keys [cost grad]} ((neural-net-cost-fn X yb 1.0) (unroll theta))]
+                      {:cost cost :grad (rollup grad)}))
+          [Th1 Th2] (unroll (fmincg wrapper (rollup [T1 T2]) :max-iter 800 :verbose true))]
+      (println "predict" (double (accuracy (predict Th1 Th2 X) y))))))
