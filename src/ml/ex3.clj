@@ -17,10 +17,10 @@
         s (mmult (add-intercept (d :X )) (trans all-theta))]
     (double (accuracy (map max-index s) y))))
 
-; iters   accy
-;  5       65%
-;  10     68%
-;  50     75%
-;  200   80%
-;  500   82%
-; 1000  84%
+; iter    accy
+; 5       65%
+; 10      68%
+; 50      75%
+; 200     80%
+; 500     82%
+; 1000    84%
