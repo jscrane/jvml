@@ -6,7 +6,7 @@
 (def y (map int (sel data :cols 2)))
 (def norm (feature-normalize (sel data :except-cols 2)))
 (def X (add-intercept (:data norm)))
-(def theta (gradient-descent (cost-fn logistic-hypothesis X y) (zeroes 3) :alpha 0.05 :num-iters 20000))
+(def theta (gradient-descent (cost-fn logistic-hypothesis X y) (zeroes 3) :alpha 0.05 :max-iter 20000))
 
 (defn cost [theta] (logistic-cost X y theta))
 

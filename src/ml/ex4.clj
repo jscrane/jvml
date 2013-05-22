@@ -55,5 +55,5 @@
     (let [eps 0.25
           T1 (random-matrix (dim (:Theta1 W)) eps)
           T2 (random-matrix (dim (:Theta2 W)) eps)
-          [Theta1 Theta2] (gradient-descent (neural-net-cost-fn X Y 1.0) [T1 T2] :num-iters 50 :alpha 2.25)]
+          [Theta1 Theta2] (gradient-descent (neural-net-cost-fn X Y 1.0) [T1 T2] :max-iter 50 :alpha 2.25)]
       (println "predict" (double (accuracy (predict Theta1 Theta2 X) y))))))

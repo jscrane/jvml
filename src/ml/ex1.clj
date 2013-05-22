@@ -8,7 +8,7 @@
 
 (defn initial-cost [] (linear-cost X y [0 0]))
 
-(def theta (gradient-descent (cost-fn linear-hypothesis X y) [0 0] :alpha 0.01 :num-iters 1500))
+(def theta (gradient-descent (cost-fn linear-hypothesis X y) [0 0] :alpha 0.01 :max-iter 1500))
 
 (defn predict-profit [v] (* (linear-hypothesis theta (trans [1 v])) 10000))
 

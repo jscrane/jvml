@@ -17,7 +17,7 @@
 (defn train-linear-regression [X y lambda]
   (let [theta (zeroes (ncol X))
         cf (linear-reg-cost-function X y)]
-    (gradient-descent (partial cf lambda) theta :num-iters 5000 :alpha 0.001)))
+    (gradient-descent (partial cf lambda) theta :max-iter 5000 :alpha 0.001)))
 
 (doto
   (scatter-plot (:X d) y :x-label "Change in water level" :y-label "Water flowing out of the dam")

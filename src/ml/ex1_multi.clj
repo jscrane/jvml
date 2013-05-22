@@ -8,7 +8,7 @@
 
 (defn predict-gradient-descent [features]
   (let [{X :data mu :mean sigma :sigma} (feature-normalize X)
-        theta (gradient-descent (cost-fn linear-hypothesis (add-intercept X) y) [0 0 0] :alpha 1 :num-iters 100)]
+        theta (gradient-descent (cost-fn linear-hypothesis (add-intercept X) y) [0 0 0] :alpha 1 :max-iter 100)]
     (linear-hypothesis theta (trans (into [1] (div (minus features mu) sigma))))))
 
 (defn predict-normal-equation [features]
