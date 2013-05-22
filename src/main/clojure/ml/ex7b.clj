@@ -15,6 +15,7 @@
           (.setRGB img c r (data i)))))
     img))
 
+; this takes forever!
 (let [A (:A (read-dataset-mat5 "data/bird_small.mat"))
       rows (nrow A) cols (/ (ncol A) 3)
       r (vectorize (trans (sel A :cols (range 0 cols))))

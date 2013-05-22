@@ -7,6 +7,7 @@
         d (map #(mmult % (trans %)) dv)]
     (indexes-of? < d)))
 
+; this takes 9s per invocation!
 (defn find-closest-centroids [X centroids]
   (map #(find-closest-centroid % centroids) X))
 

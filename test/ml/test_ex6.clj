@@ -1,6 +1,9 @@
 (ns ml.test-ex6
   (:use (clojure test)
-        (ml testutil ex6b ex6-spam)))
+        (ml testutil)
+        [ml.ex6b :only (eval-gaussian-kernel)]
+        [ml.ex6-spam :only (email-features)]
+        ))
 
 (def approx (approximately 1e-5))
 
