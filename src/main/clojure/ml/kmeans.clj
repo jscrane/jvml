@@ -2,19 +2,22 @@
   (:use (ml util)
         (incanter core stats)))
 
-(defn find-closest-centroid [point centroids]
+(defn- find-closest-centroid [point centroids]
   (indexes-of? < (map #(sum-of-squares (minus point %)) centroids)))
 
 (defn find-closest-centroids [X centroids]
   (map #(find-closest-centroid % centroids) (to-list X)))
 
-(defn compute-centroid [X idx k]
-  (map mean (trans (remove nil? (map #(if (= k %2) %1) (to-list X) idx)))))
+(defn- update-sums [[sums counts] [point idx]]
+  [(assoc sums idx (doall (plus point (sums idx)))) (assoc counts idx (inc (counts idx)))])
 
 (defn compute-centroids [X idx k]
-  (matrix (map #(compute-centroid X idx %) (range k))))
+  (let [ic (into [] (repeat k 0))
+        is (into [] (repeat k (into [] (repeat (ncol X) 0))))
+        [s c] (reduce update-sums [is ic] (map vector (to-list X) idx))]
+    (matrix (map div s c))))
 
-(defn kmeans [X centroids]
+(defn- kmeans [X centroids]
   (let [k (nrow centroids)
         idx (find-closest-centroids X centroids)]
     (compute-centroids X idx k)))

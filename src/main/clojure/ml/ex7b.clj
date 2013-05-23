@@ -15,7 +15,6 @@
           (.setRGB img c r (data i)))))
     img))
 
-; this takes forever!
 ; FIXME: use seesaw
 (if *command-line-args*
   (let [A (:A (read-dataset-mat5 "data/bird_small.mat"))
