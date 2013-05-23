@@ -14,14 +14,14 @@
     (is (approx [-15.303 598.25] grad))))
 
 (deftest test-set-error
-  (let [{:keys [X y Xval yval Xtest ytest]} args
+  (let [{:keys [lambdas X y Xval yval Xtest ytest]} args
         {Xp :data mean :mean sigma :sigma} (feature-normalize (polynomial-features X 8))
         Xpoly (add-intercept Xp)
         Xpoly-val (add-intercept (normalize (polynomial-features Xval 8) mean sigma))
-        [lambdas validation-errors _] (validation-curve Xpoly y Xpoly-val yval)
+        [validation-errors _] (validation-curve lambdas Xpoly y Xpoly-val yval)
         lambda-opt (first (apply min-key second (zipmap lambdas validation-errors)))
         theta (train-linear-regression Xpoly y lambda-opt)
         Xpoly-test (add-intercept (normalize (polynomial-features Xtest 8) mean sigma))]
     (is (= 3 lambda-opt))
     ; this is not the value in the notes because we're not using the same optimization function
-    (is (approx 3.8274 (:cost ((linear-reg-cost-function Xpoly-test ytest) 0 theta))))))
+    (is (approx 3.8599 (:cost ((linear-reg-cost-function Xpoly-test ytest) 0 theta))))))

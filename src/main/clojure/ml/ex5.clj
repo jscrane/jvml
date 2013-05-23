@@ -3,7 +3,7 @@
         (ml util gd matlab linear fmincg)))
 
 (defn init-ex5 []
-  (read-dataset-mat5 "data/ex5data1.mat"))
+  (assoc (read-dataset-mat5 "data/ex5data1.mat") :lambdas [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]))
 
 (defn linear-reg-cost-function [X y]
   (let [m (nrow y) n (ncol X)
@@ -14,9 +14,8 @@
          :grad (plus (grad theta) (mult theta l))}))))
 
 (defn train-linear-regression [X y lambda]
-  (let [theta (zeroes (ncol X))
-        cf (linear-reg-cost-function X y)]
-    (fmincg (partial cf lambda) theta :verbose true)))
+  (let [cost-fn (partial (linear-reg-cost-function X y) lambda)]
+    (fmincg cost-fn (zeroes (ncol X)))))
 
 (defn learning-curve [Xtrain ytrain Xval yval lambda]
   (let [theta (train-linear-regression Xtrain ytrain lambda)
@@ -26,27 +25,25 @@
 
 (defn learning-curves [X y Xval yval lambda]
   (reduce
-    (fn [[training-errors validation-errors] i]
-      (let [[train val] (learning-curve (matrix (take i X)) (matrix (take i y)) Xval yval lambda)]
+    (fn [[training-errors validation-errors] [Xtrain ytrain]]
+      (let [[train val] (learning-curve Xtrain ytrain Xval yval lambda)]
         [(conj training-errors train) (conj validation-errors val)]))
-    [[] []] (range 2 (inc (nrow X)))))
+    [[] []] (map #(vector (matrix (take % X)) (matrix (take % y))) (range 2 (inc (nrow X))))))
 
 (defn polynomial-features [X p]
   (apply bind-columns (map #(pow X %) (range 1 (inc p)))))
 
-(defn validation-curve [X y Xval yval]
-  (let [lambdas [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]
-        val-cf (linear-reg-cost-function Xval yval)
+(defn validation-curve [lambdas X y Xval yval]
+  (let [val-cf (linear-reg-cost-function Xval yval)
         train-cf (linear-reg-cost-function X y)]
-    (cons lambdas
-      (reduce
-        (fn [[validation-errors training-errors] lambda]
-          (let [theta (train-linear-regression X y lambda)]
-            [(conj validation-errors (:cost (val-cf 0 theta))) (conj training-errors (:cost (train-cf 0 theta)))]))
-        [[] []] lambdas))))
+    (reduce
+      (fn [[validation-errors training-errors] lambda]
+        (let [theta (train-linear-regression X y lambda)]
+          [(conj validation-errors (:cost (val-cf 0 theta))) (conj training-errors (:cost (train-cf 0 theta)))]))
+      [[] []] lambdas)))
 
 (if *command-line-args*
-  (let [{:keys [X y Xval yval]} (init-ex5)
+  (let [{:keys [X y Xval yval lambdas]} (init-ex5)
         Xi (add-intercept X)]
     (do
       (doto
@@ -75,7 +72,7 @@
             (xy-plot ords training :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
             (add-lines ords validation :series-label "Validation")
             (view))
-          (let [[lambdas validation-errors training-errors] (validation-curve Xpoly y Xpoly-val yval)]
+          (let [[validation-errors training-errors] (validation-curve lambdas Xpoly y Xpoly-val yval)]
             (doto
               (xy-plot lambdas training-errors :x-label "lambda" :y-label "Error" :series-label "Training" :legend true)
               (add-lines lambdas validation-errors :series-label "Validation")
