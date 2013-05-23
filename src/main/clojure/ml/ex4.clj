@@ -70,8 +70,8 @@
   (.vectorize (matrix (mapcat flatten mats))))
 
 ; iter  cost  predict time
-; 50    0.95  87.2%   93
-; 100   0.61  93.3%   174
+; 50    0.49  96.6%   123
+; 100   0.36  98.5%   218
 ; 200   0.50  95.0%   329
 ; 400   0.41  96.9%   613
 ; 800   0.37  98.3%   1176
@@ -85,5 +85,5 @@
           wrapper (fn [theta]
                     (let [{:keys [cost grad]} ((neural-net-cost-fn X yb 1.0) (unroll theta))]
                       {:cost cost :grad (rollup grad)}))
-          [Th1 Th2] (unroll (fmincg wrapper (rollup [T1 T2]) :max-iter 800 :verbose true))]
+          [Th1 Th2] (unroll (fmincg wrapper (rollup [T1 T2]) :max-iter 200 :verbose true))]
       (println "predict" (double (accuracy (predict Th1 Th2 X) y))))))

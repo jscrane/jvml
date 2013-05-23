@@ -3,10 +3,6 @@ package mlclass;
 import cern.colt.function.tdouble.DoubleFunction;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Minimize a continuous differentiable multivariate function. Starting point <br/>
  * is given by "X" (D by 1), and the function named in the string "f", must<br/>
@@ -99,14 +95,14 @@ public final class Fmincg {
 
     private static DoubleMatrix1D inc(DoubleMatrix1D v1, DoubleMatrix1D v2) {
         for (int i = 0; i < v1.size(); i++)
-            v1.set(i, v1.get(i) + v2.get(i));
+            v1.setQuick(i, v1.getQuick(i) + v2.getQuick(i));
         return v1;
     }
 
     private static DoubleMatrix1D subtract(DoubleMatrix1D v1, DoubleMatrix1D v2) {
         DoubleMatrix1D v = v1.like();
         for (int i = 0; i < v1.size(); i++)
-            v.set(i, v1.get(i) + v2.get(i));
+            v.setQuick(i, v1.getQuick(i) - v2.getQuick(i));
         return v;
     }
 
