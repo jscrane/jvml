@@ -13,11 +13,12 @@
                                   error (count (filter false? (map = predict (to-boolean yval))))]
                               {:model model :error error :C C :sigma sigma})))))
 
-(let [ds (read-dataset-mat5 "data/ex6data3.mat")
-      X (:X ds) y (:y ds)
-      model (:model (optimal-model X y (:Xval ds) (:yval ds)))
-      vectors (map #(seq (.values %)) (.SVs model))]
-  (doto
-    (scatter-plot (sel X :cols 0) (sel X :cols 1) :group-by y)
-    (add-points (map first vectors) (map second vectors))
-    (view)))
+(if *command-line-args*
+  (let [ds (read-dataset-mat5 "data/ex6data3.mat")
+        X (:X ds) y (:y ds)
+        model (:model (optimal-model X y (:Xval ds) (:yval ds)))
+        vectors (map #(seq (.values %)) (.SVs model))]
+    (doto
+      (scatter-plot (sel X :cols 0) (sel X :cols 1) :group-by y)
+      (add-points (map first vectors) (map second vectors))
+      (view))))

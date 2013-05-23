@@ -16,23 +16,24 @@
     img))
 
 ; this takes forever!
-(let [A (:A (read-dataset-mat5 "data/bird_small.mat"))
-      rows (nrow A) cols (/ (ncol A) 3)
-      r (vectorize (trans (sel A :cols (range 0 cols))))
-      g (vectorize (trans (sel A :cols (range cols (* cols 2)))))
-      b (vectorize (trans (sel A :cols (range (* cols 2) (* cols 3)))))
+; FIXME: use seesaw
+(if *command-line-args*
+  (let [A (:A (read-dataset-mat5 "data/bird_small.mat"))
+        rows (nrow A) cols (/ (ncol A) 3)
+        r (vectorize (trans (sel A :cols (range 0 cols))))
+        g (vectorize (trans (sel A :cols (range cols (* cols 2)))))
+        b (vectorize (trans (sel A :cols (range (* cols 2) (* cols 3)))))
 
-      X (div (bind-columns r g b) 255)
-      k 16
-      centroids (run-kmeans X (init-centroids X k) 10)
-      idx (find-closest-centroids X centroids)
-      rgb-centroids (map (fn [[r g b]] (rgb (int (* 255 r)) (int (* 255 g)) (int (* 255 b)))) centroids)]
-  (doto (JFrame.)
-    (.add
-      (JSplitPane. JSplitPane/HORIZONTAL_SPLIT
-        (JLabel. (ImageIcon. (make-image rows cols (map rgb r g b))))
-        (JLabel. (ImageIcon. (make-image rows cols (map #(nth rgb-centroids %) idx))))))
-    (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
-    (.pack)
-    (.show)))
-
+        X (div (bind-columns r g b) 255)
+        k 16
+        centroids (run-kmeans X (init-centroids X k) 10)
+        idx (find-closest-centroids X centroids)
+        rgb-centroids (map (fn [[r g b]] (rgb (int (* 255 r)) (int (* 255 g)) (int (* 255 b)))) centroids)]
+    (doto (JFrame.)
+      (.add
+        (JSplitPane. JSplitPane/HORIZONTAL_SPLIT
+          (JLabel. (ImageIcon. (make-image rows cols (map rgb r g b))))
+          (JLabel. (ImageIcon. (make-image rows cols (map #(nth rgb-centroids %) idx))))))
+      (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
+      (.pack)
+      (.show))))
