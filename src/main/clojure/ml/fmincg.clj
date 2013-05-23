@@ -3,12 +3,6 @@
   (:import (mlclass Tuple CostFunction Fmincg))
   (:use (incanter core)))
 
-(defn- unroll [v]
-  (matrix (.toArray v)))
-
-(defn- rollup [m]
-  (.vectorize (matrix m)))
-
 (defn fmincg [cost-fn initial-theta & options]
   (let [opts (when options (apply assoc {} options))
         verbose (or (:verbose opts) false)
