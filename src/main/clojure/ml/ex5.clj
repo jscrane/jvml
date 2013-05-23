@@ -1,6 +1,6 @@
 (ns ml.ex5
   (:use (incanter core charts)
-        (ml util gd matlab linear)))
+        (ml util gd matlab linear fmincg)))
 
 (defn init-ex5 []
   (read-dataset-mat5 "data/ex5data1.mat"))
@@ -16,7 +16,7 @@
 (defn train-linear-regression [X y lambda]
   (let [theta (zeroes (ncol X))
         cf (linear-reg-cost-function X y)]
-    (gradient-descent (partial cf lambda) theta :max-iter 5000 :alpha 0.001)))
+    (fmincg (partial cf lambda) theta :verbose true)))
 
 (defn learning-curve [Xtrain ytrain Xval yval lambda]
   (let [theta (train-linear-regression Xtrain ytrain lambda)

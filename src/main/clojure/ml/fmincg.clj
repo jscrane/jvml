@@ -1,12 +1,19 @@
 (ns ml.fmincg
   (:gen-class )
-  (:import (mlclass Tuple CostFunction Fmincg)))
+  (:import (mlclass Tuple CostFunction Fmincg))
+  (:use (incanter core)))
+
+(defn- unroll [v]
+  (matrix (.toArray v)))
+
+(defn- rollup [m]
+  (.vectorize (matrix m)))
 
 (defn fmincg [cost-fn initial-theta & options]
   (let [opts (when options (apply assoc {} options))
         verbose (or (:verbose opts) false)
         max-iter (or (:max-iter opts) 100)
-        [rollup unroll] (or (:reshape opts) [identity identity])]
+        [rollup unroll] (or (:reshape opts) [#(.vectorize (matrix %)) #(matrix (.toArray %))])]
     (unroll
       (Fmincg/minimize
         (proxy [CostFunction] []
