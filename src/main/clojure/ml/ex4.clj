@@ -78,11 +78,7 @@
   (time
     (let [{:keys [Theta1 Theta2 X yb y]} (init-ex4)
           eps 0.25
-          T1 (random-matrix (dim Theta1) eps)
-          T2 (random-matrix (dim Theta2) eps)
-          unroll (partial unroll (dim T1) (dim T2))
-          wrapper (fn [theta]
-                    (let [{:keys [cost grad]} ((neural-net-cost-fn X yb 1.0) (unroll theta))]
-                      {:cost cost :grad (rollup grad)}))
-          [Th1 Th2] (unroll (fmincg wrapper (rollup [T1 T2]) :max-iter 50 :verbose true))]
+          d1 (dim Theta1) d2 (dim Theta2)
+          [Th1 Th2] (fmincg (neural-net-cost-fn X yb 1.0) [(random-matrix d1 eps) (random-matrix d2 eps)]
+                      :max-iter 50 :verbose true :reshape [rollup (partial unroll d1 d2)])]
       (println "predict" (double (accuracy (predict Th1 Th2 X) y))))))
