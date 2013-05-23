@@ -25,26 +25,25 @@
     [training-error validation-error]))
 
 (defn learning-curves [X y Xval yval lambda]
-  (loop [i 2 training-errors [] validation-errors []]
-    (if (> i (nrow X))
-      [training-errors validation-errors]
+  (reduce
+    (fn [[training-errors validation-errors] i]
       (let [[train val] (learning-curve (matrix (take i X)) (matrix (take i y)) Xval yval lambda)]
-        (recur (inc i) (conj training-errors train) (conj validation-errors val))))))
+        [(conj training-errors train) (conj validation-errors val)]))
+    [[] []] (range 2 (inc (nrow X)))))
 
 (defn polynomial-features [X p]
   (apply bind-columns (map #(pow X %) (range 1 (inc p)))))
 
 (defn validation-curve [X y Xval yval]
-  (let [lambda-vec [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]]
-    (loop [lambdas lambda-vec training-errors [] validation-errors []]
-      (if (empty? lambdas)
-        [lambda-vec validation-errors training-errors]
-        (let [lambda (first lambdas)
-              theta (train-linear-regression X y lambda)
-              training-error (:cost ((linear-reg-cost-function X y) 0 theta))
-              validation-error (:cost ((linear-reg-cost-function Xval yval) 0 theta))]
-          (recur (rest lambdas) (conj training-errors training-error) (conj validation-errors validation-error)))))))
-
+  (let [lambdas [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]
+        val-cf (linear-reg-cost-function Xval yval)
+        train-cf (linear-reg-cost-function X y)]
+    (cons lambdas
+      (reduce
+        (fn [[validation-errors training-errors] lambda]
+          (let [theta (train-linear-regression X y lambda)]
+            [(conj validation-errors (:cost (val-cf 0 theta))) (conj training-errors (:cost (train-cf 0 theta)))]))
+        [[] []] lambdas))))
 
 (if *command-line-args*
   (let [{:keys [X y Xval yval]} (init-ex5)
