@@ -1,7 +1,8 @@
 (ns ml.svm
   (:import (edu.berkeley.compbio.jlibsvm.kernel GaussianRBFKernel)
            (edu.berkeley.compbio.jlibsvm ImmutableSvmParameterGrid)
-           (edu.berkeley.compbio.jlibsvm.util SparseVector)))
+           (edu.berkeley.compbio.jlibsvm.util SparseVector)
+           (edu.berkeley.compbio.jlibsvm.binary C_SVC MutableBinaryClassificationProblemImpl)))
 
 ; http://lilyx.net/2011/07/02/using-svm-support-vector-machine-from-clojure/
 (defmacro set-all! [obj m]
@@ -27,4 +28,13 @@
     (set-all! builder {eps epsilon Cset #{C} kernelSet #{kernel}})
     (.build builder)))
 
-(defn gaussian-kernel [sigma] (GaussianRBFKernel. (float (/ 1 2 sigma sigma))))
+(defn gaussian-kernel [sigma]
+  (GaussianRBFKernel. (float (/ 1 2 sigma sigma))))
+
+(defn train-model [X y C kernel]
+  (let [param (make-params 1.0e-3 (float C) kernel)
+        problem (MutableBinaryClassificationProblemImpl. Boolean (count y))]
+    (.train (C_SVC.) (add-examples problem X (to-boolean y)) param)))
+
+(defn model-vectors [model]
+  (map #(seq (.values %)) (.SVs model)))
