@@ -9,11 +9,12 @@
   (map #(find-closest-centroid % centroids) (to-list X)))
 
 (defn- update-sums [[sums counts] [point idx]]
+  ; note this doall: otherwise the stack blows when the reduction is realised!
   [(assoc sums idx (doall (plus point (sums idx)))) (assoc counts idx (inc (counts idx)))])
 
 (defn compute-centroids [X idx k]
-  (let [ic (into [] (repeat k 0))
-        is (into [] (repeat k (into [] (repeat (ncol X) 0))))
+  (let [ic (zeroes k)
+        is (into [] (repeat k (zeroes (ncol X))))
         [s c] (reduce update-sums [is ic] (map vector (to-list X) idx))]
     (matrix (map div s c))))
 
