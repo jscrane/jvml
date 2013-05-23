@@ -72,9 +72,8 @@
 ; iter  cost  predict time
 ; 50    0.49  96.6%   123
 ; 100   0.36  98.5%   218
-; 200   0.50  95.0%   329
-; 400   0.41  96.9%   613
-; 800   0.37  98.3%   1176
+; 200   0.34  99.1%   451
+; 400   0.32  99.6%   883
 (if *command-line-args*
   (time
     (let [{:keys [Theta1 Theta2 X yb y]} (init-ex4)
@@ -85,5 +84,5 @@
           wrapper (fn [theta]
                     (let [{:keys [cost grad]} ((neural-net-cost-fn X yb 1.0) (unroll theta))]
                       {:cost cost :grad (rollup grad)}))
-          [Th1 Th2] (unroll (fmincg wrapper (rollup [T1 T2]) :max-iter 200 :verbose true))]
+          [Th1 Th2] (unroll (fmincg wrapper (rollup [T1 T2]) :max-iter 50 :verbose true))]
       (println "predict" (double (accuracy (predict Th1 Th2 X) y))))))

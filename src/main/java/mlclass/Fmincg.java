@@ -124,9 +124,9 @@ public final class Fmincg {
         int M;
         int i = 0; // zero the run length counter
         int red = 1; // starting point
-        int ls_failed = 0; // no previous line search has failed
+        boolean previousLineSearchFailed = false;
         // what we return as fX get function value and gradient
-        final Tuple<Double, DoubleMatrix1D> evaluateCost = f.evaluateCost(input);
+        Tuple<Double, DoubleMatrix1D> evaluateCost = f.evaluateCost(input);
         double f1 = evaluateCost.getFirst();
         DoubleMatrix1D df1 = evaluateCost.getSecond();
         i = i + (length < 0 ? 1 : 0);
@@ -141,10 +141,9 @@ public final class Fmincg {
             // make a copy of current values
             DoubleMatrix1D X0 = input.copy();
             double f0 = f1;
-            DoubleMatrix1D df0 = df1.copy();
             // begin line search
             input = inc(input, multiply(s, z1));
-            final Tuple<Double, DoubleMatrix1D> evaluateCost2 = f.evaluateCost(input);
+            Tuple<Double, DoubleMatrix1D> evaluateCost2 = f.evaluateCost(input);
             double f2 = evaluateCost2.getFirst();
             DoubleMatrix1D df2 = evaluateCost2.getSecond();
 
@@ -159,8 +158,7 @@ public final class Fmincg {
             } else {
                 M = Math.min(MAX, -length - i);
             }
-            // initialize quantities
-            int success = 0;
+            boolean lineSearchSucceeded = false;
             double limit = -1;
 
             while (true) {
@@ -189,7 +187,7 @@ public final class Fmincg {
                     // update the step
                     z1 = z1 + z2;
                     input = inc(input, multiply(s, z2));
-                    final Tuple<Double, DoubleMatrix1D> evaluateCost3 = f.evaluateCost(input);
+                    Tuple<Double, DoubleMatrix1D> evaluateCost3 = f.evaluateCost(input);
                     f2 = evaluateCost3.getFirst();
                     df2 = evaluateCost3.getSecond();
                     M = M - 1;
@@ -200,10 +198,12 @@ public final class Fmincg {
                 }
                 if (f2 > f1 + z1 * RHO * d1 || d2 > -SIG * d1) {
                     break; // this is a failure
-                } else if (d2 > SIG * d1) {
-                    success = 1;
+                }
+                if (d2 > SIG * d1) {
+                    lineSearchSucceeded = true;
                     break; // success
-                } else if (M == 0) {
+                }
+                if (M == 0) {
                     break; // failure
                 }
                 // make cubic extrapolation
@@ -239,7 +239,7 @@ public final class Fmincg {
                 z1 = z1 + z2;
                 // update current estimates
                 input = inc(input, multiply(s, z2));
-                final Tuple<Double, DoubleMatrix1D> evaluateCost3 = f.evaluateCost(input);
+                Tuple<Double, DoubleMatrix1D> evaluateCost3 = f.evaluateCost(input);
                 f2 = evaluateCost3.getFirst();
                 df2 = evaluateCost3.getSecond();
                 M = M - 1;
@@ -247,19 +247,15 @@ public final class Fmincg {
                 d2 = df2.zDotProduct(s);
             }// end of line search
 
-            DoubleMatrix1D tmp;
-
-            if (success == 1) { // if line search succeeded
+            if (lineSearchSucceeded) {
                 f1 = f2;
                 if (verbose) {
                     System.out.print("Iteration " + i + " | Cost: " + f1 + "\r");
                 }
                 // Polack-Ribiere direction: s = (df2'*df2-df1'*df2)/(df1'*df1)*s - df2;
-                final double numerator = (df2.zDotProduct(df2) - df1.zDotProduct(df2)) / df1.zDotProduct(df1);
+                double numerator = (df2.zDotProduct(df2) - df1.zDotProduct(df2)) / df1.zDotProduct(df1);
                 s = subtract(multiply(s, numerator), df2);
-                tmp = df1;
-                df1 = df2;
-                df2 = tmp; // swap derivatives
+                df1 = df2; // swap derivatives
                 d2 = df1.zDotProduct(s);
                 if (d2 > 0) { // new slope must be negative
                     s = negative(df1); // otherwise use steepest direction
@@ -269,23 +265,19 @@ public final class Fmincg {
                 // slope ratio but max RATIO
                 z1 = z1 * Math.min(RATIO, d1 / (d2 - 2.2251e-308));
                 d1 = d2;
-                ls_failed = 0; // this line search did not fail
             } else {
                 input = X0;
                 f1 = f0;
-                df1 = df0; // restore point from before failed line search
                 // line search failed twice in a row?
-                if (ls_failed == 1 || i > Math.abs(length)) {
+                if (previousLineSearchFailed || i > Math.abs(length)) {
                     break; // or we ran out of time, so we give up
                 }
-                tmp = df1;
-                df1 = df2;
-                df2 = tmp; // swap derivatives
+                df1 = df2; // swap derivatives
                 s = negative(df1); // try steepest
                 d1 = negative(s).zDotProduct(s);
                 z1 = 1.0d / (1.0d - d1);
-                ls_failed = 1; // this line search failed
             }
+            previousLineSearchFailed = !lineSearchSucceeded;
         }
         return input;
     }
