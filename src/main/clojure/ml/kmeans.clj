@@ -2,7 +2,7 @@
   (:use (ml util)
         (incanter core stats)))
 
-(defn- find-closest-centroid [point centroids]
+(defn find-closest-centroid [point centroids]
   (indexes-of? < (map #(sum-of-squares (minus point %)) centroids)))
 
 (defn find-closest-centroids [X centroids]
