@@ -5,16 +5,14 @@
 
 (def approx (approximately 1e-5))
 
-(def args (init-ex5))
-
 (deftest regularized-linear-regression
-  (let [{:keys [X y]} args
+  (let [{:keys [X y]} (init-ex5)
         {cost :cost grad :grad} ((linear-reg-cost-function (add-intercept X) y) 1 [1 1])]
     (is (approx 303.993 cost))
     (is (approx [-15.303 598.25] grad))))
 
 (deftest test-set-error
-  (let [{:keys [lambdas X y Xval yval Xtest ytest]} args
+  (let [{:keys [lambdas X y Xval yval Xtest ytest]} (init-ex5)
         {Xp :data mean :mean sigma :sigma} (feature-normalize (polynomial-features X 8))
         Xpoly (add-intercept Xp)
         Xpoly-val (add-intercept (normalize (polynomial-features Xval 8) mean sigma))
