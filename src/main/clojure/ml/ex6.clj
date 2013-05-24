@@ -1,4 +1,4 @@
-(ns ml.ex6a
+(ns ml.ex6
   (:import (edu.berkeley.compbio.jlibsvm.kernel LinearKernel))
   (:use (incanter core charts)
         (ml matlab svm)))

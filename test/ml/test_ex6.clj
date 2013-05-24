@@ -1,13 +1,19 @@
 (ns ml.test-ex6
   (:use (clojure test)
-        (ml testutil)
-        [ml.ex6 :only (eval-gaussian-kernel)]
+        (ml matlab testutil)
+        [ml.ex6 :only (eval-gaussian-kernel optimal-model)]
         [ml.ex6-spam :only (email-features)]))
 
 (def approx (approximately 1e-5))
 
 (deftest test-gaussian-kernel
   (is (approx 0.324652 (eval-gaussian-kernel [1 2 1] [0 4 -1] 2))))
+
+(deftest test-optimal-model
+  (let [{:keys [X y Xval yval]} (read-dataset-mat5 "data/ex6data3.mat")
+        {:keys [C sigma]} (optimal-model X y Xval yval)]
+    (is (= 3 C))
+    (is (= 0.1 sigma))))
 
 (deftest test-email-features
   (let [features (email-features "data/emailSample1.txt")]

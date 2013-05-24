@@ -11,5 +11,3 @@
   "Reads a matlab binary file."
   (let [content (.getContent (MatFileReader. file))]
     (reduce (fn [d k] (assoc d (keyword k) (make-matrix (-> content (.get k) .getArray)))) {} (keys content))))
-
-
