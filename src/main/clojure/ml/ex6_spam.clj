@@ -2,8 +2,7 @@
   (:use (ml util matlab svm)
         (incanter core))
   (:import (org.tartarus.martin Stemmer)
-           (edu.berkeley.compbio.jlibsvm.kernel LinearKernel)
-           (edu.berkeley.compbio.jlibsvm.binary C_SVC MutableBinaryClassificationProblemImpl)))
+           (edu.berkeley.compbio.jlibsvm.kernel LinearKernel)))
 
 (defn process-file [name]
   (let [replacements
@@ -18,24 +17,22 @@
 
 (defn porter-stemmer [w]
   (let [s (Stemmer.)]
-    (do
-      (dorun (map #(.add s %) w))
-      (.stem s)
-      (.toString s))))
+    (dorun (map #(.add s %) w))
+    (.stem s)
+    (.toString s)))
 
 (defn email-features [file]
   (let [text-words (into #{} (map porter-stemmer (process-file file)))
         vocab (into {} (map #(let [s (.split % "\\t")] [(second s) (first s)]) (.split (slurp "data/vocab.txt") "\\n")))]
     (apply plus (map #(boolean-vector (count vocab) (Integer/parseInt %)) (remove nil? (map vocab text-words))))))
 
+; this takes too long!
 (if *command-line-args*
   (let [train-ds (read-dataset-mat5 "data/spamTrain.mat")
-        X (:X train-ds) y (to-boolean (:y train-ds)) n (count y)
-        param (make-params 1.0e-3 (float 0.1) (LinearKernel.))
-        problem (MutableBinaryClassificationProblemImpl. Boolean n)
-        model (.train (C_SVC.) (add-examples problem X y) param)
+        X (:X train-ds) y (:y train-ds) yb (to-boolean y) n (count yb)
+        model (train-model X y 0.1 (LinearKernel.))
         train-predict (map #(.predictLabel model (sparse-vector %)) X)
-        train-correct (count (filter true? (map = train-predict y)))
+        train-correct (count (filter true? (map = train-predict yb)))
 
         test-ds (read-dataset-mat5 "data/spamTest.mat")
         test-predict (map #(.predictLabel model (sparse-vector %)) (:Xtest test-ds))
