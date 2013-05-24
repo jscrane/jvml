@@ -1,6 +1,6 @@
-A reimplementation of the exercises from the Andrew Ng's Machine-Learning
-course on Coursera (https://www.coursera.org/course/ml ),
-in order to learn Incanter and explore Machine Learning algorithms.
+An implementation in Clojure of the exercises from Andrew Ng's 
+Coursera Machine-Learning course (https://www.coursera.org/course/ml),
+in order to learn Incanter and explore Machine-Learning algorithms.
 
 The layout of this repo is roughly as follows:
 * src/main/clojure/ml/ex[n].clj sets up the exercise reading data

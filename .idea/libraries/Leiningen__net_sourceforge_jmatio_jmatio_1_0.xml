@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: net.sourceforge.jmatio:jmatio:1.0">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/jmatio/jmatio/1.0/jmatio-1.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

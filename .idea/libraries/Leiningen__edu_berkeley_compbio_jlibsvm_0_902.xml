@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: edu.berkeley.compbio:jlibsvm:0.902">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/edu/berkeley/compbio/jlibsvm/0.902/jlibsvm-0.902.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

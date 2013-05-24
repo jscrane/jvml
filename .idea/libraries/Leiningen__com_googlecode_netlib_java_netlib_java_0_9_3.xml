@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: com.googlecode.netlib-java:netlib-java:0.9.3">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/googlecode/netlib-java/netlib-java/0.9.3/netlib-java-0.9.3.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

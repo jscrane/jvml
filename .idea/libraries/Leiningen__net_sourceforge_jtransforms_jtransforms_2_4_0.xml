@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: net.sourceforge.jtransforms:jtransforms:2.4.0">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/jtransforms/jtransforms/2.4.0/jtransforms-2.4.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

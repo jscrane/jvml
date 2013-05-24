@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: gov.sandia.foundry:porter-stemmer:1.4">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/gov/sandia/foundry/porter-stemmer/1.4/porter-stemmer-1.4.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

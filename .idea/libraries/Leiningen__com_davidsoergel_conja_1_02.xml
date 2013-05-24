@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: com.davidsoergel:conja:1.02">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/davidsoergel/conja/1.02/conja-1.02.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
