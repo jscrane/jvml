@@ -12,8 +12,10 @@
 
 (if *command-line-args*
   (let [{:keys [X y Xval yval]}  (read-dataset-mat5 "data/ex6data3.mat")
-        vectors (model-vectors (:model (optimal-model X y Xval yval)))]
+        opt (optimal-model X y Xval yval)
+        vectors (model-vectors (:model opt))]
     (doto
-      (scatter-plot (sel X :cols 0) (sel X :cols 1) :group-by y)
+      (scatter-plot (sel X :cols 0) (sel X :cols 1)
+        :x-label "" :y-label "" :title (str "Gaussian Kernel sigma=" (:sigma opt) " C=" (:C opt)) :group-by y)
       (add-points (map first vectors) (map second vectors))
       (view))))
