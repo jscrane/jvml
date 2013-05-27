@@ -21,5 +21,4 @@
         theta (train-linear-regression Xpoly y lambda-opt)
         Xpoly-test (add-intercept (normalize (polynomial-features Xtest 8) mean sigma))]
     (is (= 3 lambda-opt))
-    ; this is not the value in the notes because we're not using the same optimization function
     (is (approx 3.8599 (:cost ((linear-reg-cost-function Xpoly-test ytest) 0 theta))))))

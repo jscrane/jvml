@@ -17,13 +17,13 @@
   (let [cost-fn (partial (linear-reg-cost-function X y) lambda)]
     (fmincg cost-fn (zeroes (ncol X)))))
 
-(defn learning-curve [Xtrain ytrain Xval yval lambda]
+(defn- learning-curve [Xtrain ytrain Xval yval lambda]
   (let [theta (train-linear-regression Xtrain ytrain lambda)
         training-error (:cost ((linear-reg-cost-function Xtrain ytrain) 0 theta))
         validation-error (:cost ((linear-reg-cost-function Xval yval) 0 theta))]
     [training-error validation-error]))
 
-(defn learning-curves [X y Xval yval lambda]
+(defn- learning-curves [X y Xval yval lambda]
   (reduce
     (fn [[training-errors validation-errors] [Xtrain ytrain]]
       (let [[train val] (learning-curve Xtrain ytrain Xval yval lambda)]
@@ -52,10 +52,11 @@
         (view))
 
       (let [[training validation] (learning-curves Xi y (add-intercept Xval) yval 0)
-            ords (range 2 (inc (nrow Xi)))]
+            ords (range 1 (inc (nrow Xi)))]
         (doto
-          (xy-plot ords training :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
-          (add-lines ords validation :series-label "Validation")
+          (xy-plot ords training :title "Learning Curve for Linear Regression"
+            :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
+          (add-lines ords validation :series-label "Cross Validation")
           (view)))
 
       (let [{Xp :data mean :mean sigma :sigma} (feature-normalize (polynomial-features X 8))
@@ -69,11 +70,12 @@
               [training validation] (learning-curves Xpoly y Xpoly-val yval lambda)
               ords (range 2 (inc (nrow Xpoly)))]
           (doto
-            (xy-plot ords training :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
-            (add-lines ords validation :series-label "Validation")
+            (xy-plot ords training :title (str "Polynomial Regression Learning Curve (lambda=" lambda ")")
+              :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
+            (add-lines ords validation :series-label "Cross Validation")
             (view))
           (let [[validation-errors training-errors] (validation-curve lambdas Xpoly y Xpoly-val yval)]
             (doto
               (xy-plot lambdas training-errors :x-label "lambda" :y-label "Error" :series-label "Training" :legend true)
-              (add-lines lambdas validation-errors :series-label "Validation")
+              (add-lines lambdas validation-errors :series-label "Cross Validation")
               (view))))))))
