@@ -4,7 +4,7 @@
   (:import (org.tartarus.martin Stemmer)
            (edu.berkeley.compbio.jlibsvm.kernel LinearKernel)))
 
-(defn process-file [name]
+(defn- process-file [name]
   (let [replacements
         [["<[^<>]+>" " "]
          ["[0-9]+" "number"]
@@ -15,7 +15,7 @@
                      (reduce (fn [s [a b]] (.replaceAll s a b)) (.toLowerCase (slurp name)) replacements)
                      "[ @/#.-:&*+=\\[\\]?!(){},'\">_<;%\n]"))))
 
-(defn porter-stemmer [w]
+(defn- porter-stemmer [w]
   (let [s (Stemmer.)]
     (dorun (map #(.add s %) w))
     (.stem s)

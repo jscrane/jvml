@@ -1,4 +1,5 @@
 (ns ml.svm
+  (:use (incanter core))
   (:import (edu.berkeley.compbio.jlibsvm.kernel GaussianRBFKernel)
            (edu.berkeley.compbio.jlibsvm ImmutableSvmParameterGrid)
            (edu.berkeley.compbio.jlibsvm.util SparseVector)
@@ -10,10 +11,9 @@
 
 (defn sparse-vector [v]
   (let [n (count v) sv (SparseVector. n)]
-    (do
-      (set! (.indexes sv) (int-array (range n)))
-      (set! (.values sv) (float-array v))
-      sv)))
+    (set! (.indexes sv) (int-array (range n)))
+    (set! (.values sv) (float-array v))
+    sv))
 
 (defn add-examples [prob X y]
   (doseq [ex (map list X y)]
@@ -21,7 +21,7 @@
   prob)
 
 (defn to-boolean [y]
-  (map #(if (zero? (int %)) Boolean/FALSE Boolean/TRUE) y))
+  (into [] (map #(if (zero? (int %)) Boolean/FALSE Boolean/TRUE) y)))
 
 (defn make-params [epsilon C kernel]
   (let [builder (ImmutableSvmParameterGrid/builder)]
@@ -34,7 +34,7 @@
 (defn train-model [X y C kernel]
   (let [param (make-params 1.0e-3 (float C) kernel)
         problem (MutableBinaryClassificationProblemImpl. Boolean (count y))]
-    (.train (C_SVC.) (add-examples problem X (to-boolean y)) param)))
+    (.train (C_SVC.) (add-examples problem (to-list X) (to-boolean y)) param)))
 
 (defn model-vectors [model]
   (map #(seq (.values %)) (.SVs model)))
