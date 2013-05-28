@@ -44,38 +44,37 @@
 
 (if *command-line-args*
   (let [{:keys [X y Xval yval lambdas]} (init-ex5)
-        Xi (add-intercept X)]
-    (do
-      (doto
-        (scatter-plot X y :x-label "Change in water level" :y-label "Water flowing out of the dam")
-        (add-lines X (mmult Xi (train-linear-regression Xi y 0)))
-        (view))
+        Xi (add-intercept X)
+        [training validation] (learning-curves Xi y (add-intercept Xval) yval 0)
+        ords (range 1 (inc (nrow Xi)))]
+    (doto
+      (scatter-plot X y :title "Linear Fit" :x-label "Change in water level" :y-label "Water flowing out of the dam")
+      (add-lines X (mmult Xi (train-linear-regression Xi y 0)))
+      (view))
+    (doto
+      (xy-plot ords training :title "Linear Regression Learning Curve"
+        :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
+      (add-lines ords validation :series-label "Cross Validation")
+      (view))
 
-      (let [[training validation] (learning-curves Xi y (add-intercept Xval) yval 0)
-            ords (range 1 (inc (nrow Xi)))]
-        (doto
-          (xy-plot ords training :title "Learning Curve for Linear Regression"
-            :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
-          (add-lines ords validation :series-label "Cross Validation")
-          (view)))
-
-      (let [{Xp :data mean :mean sigma :sigma} (feature-normalize (polynomial-features X 8))
-            Xpoly (add-intercept Xp)
-            lambda 0]
-        (doto
-          (scatter-plot X y :x-label "Change in water level" :y-label "Water flowing out of the dam")
-          (add-lines X (mmult Xpoly (train-linear-regression Xpoly y lambda)))
-          (view))
-        (let [Xpoly-val (add-intercept (normalize (polynomial-features Xval 8) mean sigma))
-              [training validation] (learning-curves Xpoly y Xpoly-val yval lambda)
-              ords (range 2 (inc (nrow Xpoly)))]
+    (let [{Xp :data mean :mean sigma :sigma} (feature-normalize (polynomial-features X 8))
+          Xpoly (add-intercept Xp)
+          Xpoly-val (add-intercept (normalize (polynomial-features Xval 8) mean sigma))
+          ords (range 2 (inc (nrow Xpoly)))]
+      (doseq [lambda [0 1 100]]
+        (let [[training validation] (learning-curves Xpoly y Xpoly-val yval lambda)]
           (doto
-            (xy-plot ords training :title (str "Polynomial Regression Learning Curve (lambda=" lambda ")")
+            (scatter-plot X y :title (str "Polynomial Fit (\u03bb=" lambda ")")
+              :x-label "Change in water level" :y-label "Water flowing out of the dam")
+            (add-lines X (mmult Xpoly (train-linear-regression Xpoly y lambda)))
+            (view))
+          (doto
+            (xy-plot ords training :title (str "Polynomial Learning Curve (\u03bb=" lambda ")")
               :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)
             (add-lines ords validation :series-label "Cross Validation")
-            (view))
-          (let [[validation-errors training-errors] (validation-curve lambdas Xpoly y Xpoly-val yval)]
-            (doto
-              (xy-plot lambdas training-errors :x-label "lambda" :y-label "Error" :series-label "Training" :legend true)
-              (add-lines lambdas validation-errors :series-label "Cross Validation")
-              (view))))))))
+            (view))))
+      (let [[validation-errors training-errors] (validation-curve lambdas Xpoly y Xpoly-val yval)]
+        (doto
+          (xy-plot lambdas training-errors :x-label "\u03bb" :y-label "Error" :series-label "Training" :legend true)
+          (add-lines lambdas validation-errors :series-label "Cross Validation")
+          (view))))))
