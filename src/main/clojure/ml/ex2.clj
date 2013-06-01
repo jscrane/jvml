@@ -1,6 +1,6 @@
 (ns ml.ex2
   (:use (incanter core charts io)
-        (ml util gd logistic)))
+        (ml util optim logistic)))
 
 (defn init-ex2 []
   (let [data (to-matrix (read-dataset "data/ex2data1.txt"))

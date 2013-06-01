@@ -1,6 +1,6 @@
 (ns ml.ex1
   (:use (incanter core charts io)
-        (ml util gd linear)))
+        (ml util optim linear)))
 
 (defn- compute-parameters [X y]
   (gradient-descent (cost-fn linear-cost linear-hypothesis X y) [0 0] :alpha 0.01 :max-iter 1500))

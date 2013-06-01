@@ -1,6 +1,6 @@
 (ns ml.ex4
   (:use (incanter core)
-        (ml util logistic gd matlab)))
+        (ml util logistic optim matlab)))
 
 (defn init-ex4 []
   (let [d (read-dataset-mat5 "data/ex3data1.mat")

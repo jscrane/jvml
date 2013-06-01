@@ -1,6 +1,6 @@
 (ns ml.ex1-multi
   (:use (incanter core io)
-        (ml util gd linear)))
+        (ml util optim linear)))
 
 (defn init-ex1-multi []
   (let [data (to-matrix (read-dataset "data/ex1data2.txt"))]

@@ -1,4 +1,4 @@
-(ns ml.gd
+(ns ml.optim
   (:gen-class )
   (:import (incanter Matrix)
            (mlclass Tuple CostFunction Fmincg))

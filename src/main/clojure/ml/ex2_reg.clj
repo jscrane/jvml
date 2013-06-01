@@ -1,6 +1,6 @@
 (ns ml.ex2-reg
   (:use (incanter core charts io)
-        (ml util gd logistic)))
+        (ml util optim logistic)))
 
 ; add polynomial features
 (defn- map-features [x1 x2]
