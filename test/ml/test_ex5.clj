@@ -7,7 +7,7 @@
 
 (deftest regularized-linear-regression
   (let [{:keys [X y]} (init-ex5)
-        {cost :cost grad :grad} ((linear-reg-cost-function (add-intercept X) y) 1 [1 1])]
+        {cost :cost grad :grad} ((linear-reg-cost-function (add-intercept X) y 1) [1 1])]
     (is (approx 303.993 cost))
     (is (approx [-15.303 598.25] grad))))
 
@@ -21,4 +21,4 @@
         theta (train-linear-regression Xpoly y lambda-opt)
         Xpoly-test (add-intercept (normalize (polynomial-features Xtest 8) mean sigma))]
     (is (= 3 lambda-opt))
-    (is (approx 3.8599 (:cost ((linear-reg-cost-function Xpoly-test ytest) 0 theta))))))
+    (is (approx 3.8599 (:cost ((linear-reg-cost-function Xpoly-test ytest 0) theta))))))

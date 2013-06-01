@@ -11,7 +11,7 @@
     (apply bind-rows
       (for [c (range 1 (inc num-labels))]
         (let [samples (into [] (map #(if (= % c) 1 0) y))]
-          (gradient-descent (reg-cost-fn logistic-hypothesis X samples lambda) initial-theta :max-iter iters))))))
+          (gradient-descent (reg-cost-fn logistic-cost logistic-hypothesis X samples lambda) initial-theta :max-iter iters))))))
 
 (defn one-vs-all-accuracy [args lambda iters]
   (let [{:keys [y X]} args

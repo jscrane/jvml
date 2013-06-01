@@ -8,7 +8,7 @@
         y (map int (sel data :cols 2))
         X (add-intercept (:data norm))]
     {:y y :norm norm :X X
-     :theta (gradient-descent (cost-fn logistic-hypothesis X y) (zeroes 3) :alpha 0.05 :max-iter 20000)}))
+     :theta (gradient-descent (cost-fn logistic-cost logistic-hypothesis X y) (zeroes 3) :alpha 0.05 :max-iter 20000)}))
 
 (defn cost [args theta]
   (let [{:keys [X y]} args]

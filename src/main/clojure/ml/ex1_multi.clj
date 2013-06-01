@@ -9,7 +9,7 @@
 (defn predict-gradient-descent [args features]
   (let [{:keys [X y]} args
         {x-norm :data mu :mean sigma :sigma} (feature-normalize X)
-        theta (gradient-descent (cost-fn linear-hypothesis (add-intercept x-norm) y) [0 0 0] :alpha 1 :max-iter 100)]
+        theta (gradient-descent (cost-fn linear-cost linear-hypothesis (add-intercept x-norm) y) [0 0 0] :alpha 1 :max-iter 100)]
     (linear-hypothesis theta (trans (into [1] (div (minus features mu) sigma))))))
 
 (defn predict-normal-equation [args features]

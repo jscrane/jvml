@@ -3,7 +3,7 @@
         (ml util gd linear)))
 
 (defn- compute-parameters [X y]
-  (gradient-descent (cost-fn linear-hypothesis X y) [0 0] :alpha 0.01 :max-iter 1500))
+  (gradient-descent (cost-fn linear-cost linear-hypothesis X y) [0 0] :alpha 0.01 :max-iter 1500))
 
 (defn init-ex1 []
   (let [data (to-matrix (read-dataset "data/ex1data1.txt"))

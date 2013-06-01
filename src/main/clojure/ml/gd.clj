@@ -25,20 +25,31 @@
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]
     (div (mmult xt d) m)))
 
-(defn cost-fn [hypothesis-fn ^Matrix X ^Matrix y]
-  "Constructs a cost function.
+(defn cost-fn [cost-fn hypothesis-fn ^Matrix X ^Matrix y]
+  "Constructs a cost function for use with an optimizer.
 
+  cost-fn: a function of the model parameters (theta)
   hypothesis-fn: a function of two arguments: the model parameters (theta) and the input features (X)
   X: the input features, an mxn Matrix
   y: the input labels, an mx1 Matrix"
-  (fn [theta] {:grad (linear-gradient hypothesis-fn X y theta)}))
+  (let [grad (partial linear-gradient hypothesis-fn X y)
+        cost (partial cost-fn X y)]
+    (fn [theta]
+      {:grad (grad theta)
+       :cost (cost theta)})))
 
-(defn reg-cost-fn [hypothesis-fn ^Matrix X ^Matrix y lambda]
-  "Constructs a regularised cost function.
+(defn reg-cost-fn [cost-fn hypothesis-fn ^Matrix X ^Matrix y lambda]
+  "Constructs a regularised cost function for use with an optimizer.
 
+  cost-fn: a function of the model parameters (theta)
   hypothesis-fn: a function of two arguments: the model parameters (theta) and the input features (X)
   X: the input features, an mxn Matrix
   y: the input labels, an mx1 Matrix
   lambda: the regularisation parameter, between 0 and 1"
-  (let [lambda (into [0] (repeat (dec (ncol X)) (/ lambda (nrow y))))]
-    (fn [theta] {:grad (plus (linear-gradient hypothesis-fn X y theta) (mult theta lambda))})))
+  (let [m (nrow y) lm (/ lambda m)
+        lambdav (into [0] (repeat (dec (ncol X)) lm))
+        grad (partial linear-gradient hypothesis-fn X y)
+        cost (partial cost-fn X y)]
+    (fn [theta]
+      {:grad (plus (grad theta) (mult theta lambdav))
+       :cost (+ (cost theta) (* lm 0.5 (sum (pow (rest theta) 2))))})))

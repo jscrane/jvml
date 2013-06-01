@@ -32,7 +32,7 @@
             Theta2-reg (zero-first-column Theta2)
             reg (* lambda 0.5 (+ (sum (map sum-of-squares Theta1-reg)) (sum (map sum-of-squares Theta2-reg))))
             reg-cost (/ (- reg cost) m)]
-                (println reg-cost)
+        (println reg-cost)
         {:cost reg-cost
          :grad [(div (plus delta1 (mult lambda Theta1-reg)) m) (div (plus delta2 (mult lambda Theta2-reg)) m)]}))))
 

@@ -5,22 +5,16 @@
 (defn init-ex5 []
   (assoc (read-dataset-mat5 "data/ex5data1.mat") :lambdas [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]))
 
-(defn linear-reg-cost-function [X y]
-  (let [m (nrow y) n (ncol X)
-        grad (partial linear-gradient linear-hypothesis X y)]
-    (fn [lambda theta]
-      (let [lm (/ lambda m) l (into [0] (repeat (dec n) lm))]
-        {:cost (+ (linear-cost X y theta) (* lm 0.5 (sum (pow (rest theta) 2))))
-         :grad (plus (grad theta) (mult theta l))}))))
+(defn linear-reg-cost-function [X y lambda]
+  (reg-cost-fn linear-cost linear-hypothesis X y lambda))
 
 (defn train-linear-regression [X y lambda]
-  (let [cost-fn (partial (linear-reg-cost-function X y) lambda)]
-    (fmincg cost-fn (zeroes (ncol X)))))
+  (fmincg (linear-reg-cost-function X y lambda) (zeroes (ncol X))))
 
 (defn- learning-curve [Xtrain ytrain Xval yval lambda]
   (let [theta (train-linear-regression Xtrain ytrain lambda)
-        training-error (:cost ((linear-reg-cost-function Xtrain ytrain) 0 theta))
-        validation-error (:cost ((linear-reg-cost-function Xval yval) 0 theta))]
+        training-error (:cost ((linear-reg-cost-function Xtrain ytrain 0) theta))
+        validation-error (:cost ((linear-reg-cost-function Xval yval 0) theta))]
     [training-error validation-error]))
 
 (defn- learning-curves [X y Xval yval lambda]
@@ -34,12 +28,12 @@
   (apply bind-columns (map #(pow X %) (range 1 (inc p)))))
 
 (defn validation-curve [lambdas X y Xval yval]
-  (let [val-cf (linear-reg-cost-function Xval yval)
-        train-cf (linear-reg-cost-function X y)]
+  (let [val-cf (linear-reg-cost-function Xval yval 0)
+        train-cf (linear-reg-cost-function X y 0)]
     (reduce
       (fn [[validation-errors training-errors] lambda]
         (let [theta (train-linear-regression X y lambda)]
-          [(conj validation-errors (:cost (val-cf 0 theta))) (conj training-errors (:cost (train-cf 0 theta)))]))
+          [(conj validation-errors (:cost (val-cf theta))) (conj training-errors (:cost (train-cf theta)))]))
       [[] []] lambdas)))
 
 (if *command-line-args*
