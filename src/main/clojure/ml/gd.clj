@@ -1,6 +1,7 @@
 (ns ml.gd
   (:gen-class )
-  (:import (incanter Matrix))
+  (:import (incanter Matrix)
+           (mlclass Tuple CostFunction Fmincg))
   (:use (incanter core)))
 
 (defn gradient-descent [cost-fn initial-theta & options]
@@ -20,6 +21,20 @@
         vf (fn [theta]
              (map #(minus %1 (mult alpha %2)) theta (:grad (cost-fn theta))))]
     (first (drop max-iter (iterate (if (instance? Matrix initial-theta) mf vf) initial-theta)))))
+
+(defn fmincg [cost-fn initial-theta & options]
+  "Finds the model parameters which minimize the given cost function using the method of Conjugate-Gradients."
+  (let [opts (when options (apply assoc {} options))
+        verbose (or (:verbose opts) false)
+        max-iter (or (:max-iter opts) 100)
+        [rollup unroll] (or (:reshape opts) [#(.vectorize (matrix %)) #(matrix (.toArray %))])]
+    (unroll
+      (Fmincg/minimize
+        (proxy [CostFunction] []
+          (evaluateCost [theta]
+            (let [{:keys [cost grad]} (cost-fn (unroll theta))]
+              (Tuple. cost (rollup grad)))))
+        (rollup initial-theta) max-iter verbose))))
 
 (defn ^Matrix linear-gradient [hf ^Matrix X ^Matrix y theta]
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]
