@@ -5,16 +5,13 @@
 (defn init-ex5 []
   (assoc (read-dataset-mat5 "data/ex5data1.mat") :lambdas [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]))
 
-(defn linear-reg-cost-function [X y lambda]
-  (reg-cost-fn linear-cost linear-hypothesis X y lambda))
-
 (defn train-linear-regression [X y lambda]
-  (fmincg (linear-reg-cost-function X y lambda) (zeroes (ncol X))))
+  (fmincg (reg-linear-cost-function X y lambda) (zeroes (ncol X))))
 
 (defn- learning-curve [Xtrain ytrain Xval yval lambda]
   (let [theta (train-linear-regression Xtrain ytrain lambda)
-        training-error (:cost ((linear-reg-cost-function Xtrain ytrain 0) theta))
-        validation-error (:cost ((linear-reg-cost-function Xval yval 0) theta))]
+        training-error (:cost ((linear-cost-function Xtrain ytrain) theta))
+        validation-error (:cost ((linear-cost-function Xval yval) theta))]
     [training-error validation-error]))
 
 (defn- learning-curves [X y Xval yval lambda]
@@ -28,8 +25,8 @@
   (apply bind-columns (map #(pow X %) (range 1 (inc p)))))
 
 (defn validation-curve [lambdas X y Xval yval]
-  (let [val-cf (linear-reg-cost-function Xval yval 0)
-        train-cf (linear-reg-cost-function X y 0)]
+  (let [val-cf (linear-cost-function Xval yval)
+        train-cf (linear-cost-function X y)]
     (reduce
       (fn [[validation-errors training-errors] lambda]
         (let [theta (train-linear-regression X y lambda)]

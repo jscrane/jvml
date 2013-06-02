@@ -15,7 +15,7 @@
 
 (defn- optimize [X y lambda]
   (let [initial-theta (zeroes (ncol X))]
-    (gradient-descent (reg-cost-fn logistic-cost logistic-hypothesis X y lambda) initial-theta :alpha 0.05 :max-iter 5000)))
+    (gradient-descent (reg-logistic-cost-function X y lambda) initial-theta :alpha 0.05 :max-iter 5000)))
 
 (defn reg-cost [args theta]
   (let [{:keys [X y]} args]

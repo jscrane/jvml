@@ -1,6 +1,7 @@
 (ns ml.linear
   (:gen-class)
-  (:use (incanter core)))
+  (:use (incanter core)
+        (ml optim)))
 
 (defn linear-hypothesis [theta X]
   "The hypothesis function for linear regression."
@@ -14,4 +15,10 @@
 (defn normal-equation [X y]
   (let [Xt (trans X)]
     (mmult (solve (mmult Xt X)) Xt y)))
+
+(defn linear-cost-function [X y]
+  (cost-fn linear-cost linear-hypothesis X y))
+
+(defn reg-linear-cost-function [X y lambda]
+  (reg-cost-fn linear-cost linear-hypothesis X y lambda))
 

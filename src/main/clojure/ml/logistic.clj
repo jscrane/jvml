@@ -1,7 +1,8 @@
 (ns ml.logistic
   (:gen-class )
   (:import (incanter Matrix))
-  (:use (incanter core) (ml util)))
+  (:use (incanter core)
+        (ml util optim)))
 
 (defn ^Matrix sigmoid [^Matrix z]
   (div 1 (plus 1 (exp (minus z)))))
@@ -22,3 +23,9 @@
 (defn accuracy [p y]
   "Returns how accurately the prediction vector (p) reflects the labels (y)"
   (/ (count (filter true? (map = p y))) (nrow y)))
+
+(defn logistic-cost-function [X y]
+  (cost-fn logistic-cost logistic-hypothesis X y))
+
+(defn reg-logistic-cost-function [X y lambda]
+  (reg-cost-fn logistic-cost logistic-hypothesis X y lambda))
