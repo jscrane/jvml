@@ -27,6 +27,8 @@
     (apply plus (map #(boolean-vector (count vocab) (Integer/parseInt %)) (remove nil? (map vocab text-words))))))
 
 ; this takes too long!
+; training accuracy 99.825
+; test accuracy 98.9
 (if *command-line-args*
   (let [train-ds (read-dataset-mat5 "data/spamTrain.mat")
         X (:X train-ds) y (:y train-ds) yb (to-boolean y) n (count yb)
