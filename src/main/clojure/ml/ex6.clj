@@ -20,14 +20,15 @@
           C 1
           vectors (model-vectors (train-model X y C (LinearKernel.)))]
       (doto
-        (scatter-plot (sel X :cols 0) (sel X :cols 1) :x-label "" :y-label "" :title (str "Linear Kernel, C=" C) :group-by y)
+        (scatter-plot (sel X :cols 0) (sel X :cols 1) :x-label "" :y-label "" :title (str "Linear Kernel C=" C) :group-by y)
         (add-points (map first vectors) (map second vectors))
         (view)))
     (let [{:keys [X y]} (read-dataset-mat5 "data/ex6data2.mat")
-          C 1
-          vectors (model-vectors (train-model X y C (gaussian-kernel 0.1)))]
+          C 1 sigma 0.1
+          vectors (model-vectors (train-model X y C (gaussian-kernel sigma)))]
       (doto
-        (scatter-plot (sel X :cols 0) (sel X :cols 1) :x-label "" :y-label "" :title (str "Gaussian Kernel, C=" C) :group-by y)
+        (scatter-plot (sel X :cols 0) (sel X :cols 1)
+          :x-label "" :y-label "" :title (str "Gaussian Kernel \u03c3=" sigma " C=" C) :group-by y)
         (add-points (map first vectors) (map second vectors))
         (view)))
     (let [{:keys [X y Xval yval]} (read-dataset-mat5 "data/ex6data3.mat")
@@ -35,6 +36,6 @@
           vectors (model-vectors (:model opt))]
       (doto
         (scatter-plot (sel X :cols 0) (sel X :cols 1)
-          :x-label "" :y-label "" :title (str "Gaussian Kernel sigma=" (:sigma opt) " C=" (:C opt)) :group-by y)
+          :x-label "" :y-label "" :title (str "Gaussian Kernel \u03c3=" (:sigma opt) " C=" (:C opt)) :group-by y)
         (add-points (map first vectors) (map second vectors))
         (view)))))

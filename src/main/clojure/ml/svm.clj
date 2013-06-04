@@ -36,5 +36,8 @@
         problem (MutableBinaryClassificationProblemImpl. Boolean (count y))]
     (.train (C_SVC.) (add-examples problem (to-list X) (to-boolean y)) param)))
 
+; see svmTrain.m: only pick SVs with alpha > 0
 (defn model-vectors [model]
-  (map #(seq (.values %)) (.SVs model)))
+  (let [idx (map first (filter #(pos? (second %)) (map-indexed vector (.alphas model))))
+        vects (map #(seq (.values %)) (.SVs model))]
+    (map #(nth vects %) idx)))
