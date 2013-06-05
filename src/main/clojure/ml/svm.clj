@@ -41,3 +41,6 @@
   (let [idx (map first (filter #(pos? (second %)) (map-indexed vector (.alphas model))))
         vects (map #(seq (.values %)) (.SVs model))]
     (map #(nth vects %) idx)))
+
+(defn svm-predict [model Xval]
+  (map #(.predictLabel model (sparse-vector %)) Xval))

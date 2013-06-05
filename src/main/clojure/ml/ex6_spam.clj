@@ -30,15 +30,12 @@
 ; training accuracy 99.825
 ; test accuracy 98.9
 (if *command-line-args*
-  (let [train-ds (read-dataset-mat5 "data/spamTrain.mat")
-        X (:X train-ds) y (:y train-ds) yb (to-boolean y) n (count yb)
+  (let [{:keys [X y]} (read-dataset-mat5 "data/spamTrain.mat")
         model (train-model X y 0.1 (LinearKernel.))
-        train-predict (map #(.predictLabel model (sparse-vector %)) X)
-        train-correct (count (filter true? (map = train-predict yb)))
+        train-accuracy (accuracy (svm-predict model X) (to-boolean y))
 
-        test-ds (read-dataset-mat5 "data/spamTest.mat")
-        test-predict (map #(.predictLabel model (sparse-vector %)) (:Xtest test-ds))
-        test-correct (count (filter true? (map = test-predict (to-boolean (:ytest test-ds)))))]
+        {:keys [Xtest ytest]} (read-dataset-mat5 "data/spamTest.mat")
+        test-accuracy (accuracy (svm-predict model Xtest) (to-boolean ytest))]
 
-    (println "training accuracy" (/ (double train-correct) n 0.01))
-    (println "test accuracy" (/ (double test-correct) (count (:ytest test-ds)) 0.01))))
+    (println "training accuracy" (double (* train-accuracy 100)))
+    (println "test accuracy" (double (* test-accuracy 100)))))

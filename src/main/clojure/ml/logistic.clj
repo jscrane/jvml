@@ -20,10 +20,6 @@
   "Returns a vector of 0s or 1s, depending on whether the corresponding element of the input vector is < 0.5."
   (map #(if (< % 0.5) 0 1) v))
 
-(defn accuracy [p y]
-  "Returns how accurately the prediction vector (p) reflects the labels (y)"
-  (/ (count (filter true? (map = p y))) (nrow y)))
-
 (defn logistic-cost-function [X y]
   (cost-fn logistic-cost logistic-hypothesis X y))
 

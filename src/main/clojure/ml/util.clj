@@ -28,3 +28,7 @@
 
 (defn boolean-vector [n i]
   (into [] (map #(if (= % i) 1 0) (range 1 (inc n)))))
+
+(defn accuracy [p y]
+  "Returns how accurately the prediction vector (p) reflects the labels (y)"
+  (/ (count (filter true? (map = p y))) (nrow y)))
