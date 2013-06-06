@@ -1,4 +1,4 @@
-package mlclass;
+package mlclass.fmincg;
 
 public class Tuple<P, Q> {
 

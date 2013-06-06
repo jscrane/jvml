@@ -2,7 +2,8 @@
   (:use (clojure test)
         (ml util testutil)
         [incanter.core :only (trans matrix)]
-        [ml.ex4 :only (init-ex4 neural-net-cost-fn sigmoid-gradient)]))
+        [ml.nn :only (neural-net-cost-fn sigmoid-gradient)]
+        [ml.ex4 :only (init-ex4)]))
 
 (def approx (approximately 1e-6))
 

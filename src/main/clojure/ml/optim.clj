@@ -1,7 +1,7 @@
 (ns ml.optim
   (:gen-class )
   (:import (incanter Matrix)
-           (mlclass Tuple CostFunction Fmincg))
+           (mlclass.fmincg Tuple CostFunction Fmincg))
   (:use (incanter core)))
 
 (defn gradient-descent [cost-fn initial-theta & options]

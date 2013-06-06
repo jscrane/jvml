@@ -7,17 +7,20 @@
 (defn ^Matrix sigmoid [^Matrix z]
   (div 1 (plus 1 (exp (minus z)))))
 
-(defn ^Matrix logistic-hypothesis [^Matrix theta ^Matrix X]
+(defn ^Matrix logistic-hypothesis
   "The hypothesis function for logistic regression."
+  [^Matrix theta ^Matrix X]
   (sigmoid (mmult X theta)))
 
-(defn logistic-cost [^Matrix X ^Matrix y ^Matrix theta]
+(defn logistic-cost
   "The logistic cost function"
+  [^Matrix X ^Matrix y ^Matrix theta]
   (let [h (logistic-hypothesis theta X) m (nrow y) o (ones m)]
     (- (/ (sum (plus (mult (log h) y) (mult (minus o y) (log (minus o h))))) m))))
 
-(defn prediction [v]
+(defn prediction
   "Returns a vector of 0s or 1s, depending on whether the corresponding element of the input vector is < 0.5."
+  [v]
   (map #(if (< % 0.5) 0 1) v))
 
 (defn logistic-cost-function [X y]

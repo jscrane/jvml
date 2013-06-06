@@ -1,4 +1,4 @@
-package mlclass;
+package mlclass.fmincg;
 
 import cern.colt.function.tdouble.DoubleFunction;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
