@@ -1,5 +1,6 @@
 (ns ml.svm
-  (:use (incanter core))
+  (:use (incanter core)
+        (ml util))
   (:import (edu.berkeley.compbio.jlibsvm.kernel GaussianRBFKernel)
            (edu.berkeley.compbio.jlibsvm ImmutableSvmParameterGrid)
            (edu.berkeley.compbio.jlibsvm.util SparseVector)
@@ -44,3 +45,9 @@
 
 (defn svm-predict [model Xval]
   (map #(.predictLabel model (sparse-vector %)) Xval))
+
+(defn optimal-model [X y Xval yval values]
+  (apply max-key :accuracy (for [C values sigma values]
+                             (let [model (train-model X y C (gaussian-kernel sigma))
+                                   acc (accuracy (svm-predict model Xval) (to-boolean yval))]
+                               {:model model :accuracy acc :C C :sigma sigma}))))
