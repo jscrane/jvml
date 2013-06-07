@@ -3,8 +3,10 @@ package mlclass.randomforest;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +49,7 @@ public final class RandomForest {
     /**
      * This maps from a data record to an array that records the classifications by the trees where it was a "left out" record (the indices are the class and the values are the counts)
      */
-    public final HashMap<DoubleMatrix1D, int[]> estimateOOB;
+    public final Map<DoubleMatrix1D, int[]> estimateOOB;
 
     /**
      * the total forest-wide error
@@ -67,11 +69,12 @@ public final class RandomForest {
         this.C = C;
         this.M = M;
         this.Ms = (int) Math.round(Math.log(M) / Math.log(2) + 1);   //recommended by Breiman
-        this.trees = new ArrayList<DecisionTree>(numTrees);
+        this.trees = Collections.synchronizedList(new ArrayList<DecisionTree>(numTrees));
 
         System.out.print("creating " + numTrees + " trees in a random Forest. . . ");
-        this.estimateOOB = new HashMap<DoubleMatrix1D, int[]>(data.size());
+        this.estimateOOB = new ConcurrentHashMap<DoubleMatrix1D, int[]>(data.size());
 
+//        ExecutorService treePool = Executors.newFixedThreadPool(2);
         ExecutorService treePool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (int t = 0; t < numTrees; t++)
             treePool.execute(new CreateTree(data, this));
@@ -94,11 +97,11 @@ public final class RandomForest {
             N++;
             int[] map = estimateOOB.get(record);
             int Class = findMaxIndex(map);
-            if (Class == (int)record.getQuick(M))
+            if (Class == (int) record.getQuick(M))
                 correct++;
         }
         error = 1 - correct / N;
-        System.out.println("Forest error rate:" + error);
+//        System.out.println("Forest error rate:" + error);
 
         /**
          * This calculates the forest-wide importance levels for all attributes.

@@ -80,7 +80,7 @@ public final class DecisionTree {
         N = data.size();
         importances = new int[forest.M];
 
-        System.out.println("\nMake a Dtree N:" + N + " M:" + forest.M + " Ms:" + forest.Ms);
+//        System.out.println("\nMake a Dtree N:" + N + " M:" + forest.M + " Ms:" + forest.Ms);
 
         List<DoubleMatrix1D> train = new ArrayList<DoubleMatrix1D>(); //data becomes the "bootstrap" - that's all it knows
         List<DoubleMatrix1D> test = new ArrayList<DoubleMatrix1D>();
@@ -91,7 +91,7 @@ public final class DecisionTree {
         this.root = new TreeNode();
         root.data = train;
         recursiveSplit(root);
-        System.out.println("\ndone split");
+//        System.out.println("\ndone split");
 
         int correct = 0;
         for (DoubleMatrix1D record : test) {
@@ -102,7 +102,7 @@ public final class DecisionTree {
         }
 
         double err = 1 - correct / ((double) test.size());
-        System.out.println("of left out data, error rate:" + err);
+//        System.out.println("of left out data, error rate:" + err);
         this.correct = correct;
 
         for (int m = 0; m < forest.M; m++) {
@@ -387,10 +387,10 @@ public final class DecisionTree {
 
         List<DoubleMatrix1D> lower = getLower(parent.data, n);
         List<DoubleMatrix1D> upper = getUpper(parent.data, n);
-        if (lower == null)
-            System.out.println("lower list null");
-        if (upper == null)
-            System.out.println("upper list null");
+//        if (lower == null)
+//            System.out.println("lower list null");
+//        if (upper == null)
+//            System.out.println("upper list null");
         double[] pl = getClassProbs(lower);
         double[] pu = getClassProbs(upper);
         double eL = calculateEntropy(pl);
@@ -400,7 +400,7 @@ public final class DecisionTree {
         if (e < lowestE.d) {
             lowestE.d = e;
             parent.splitAttributeM = m;
-            parent.splitValue = (int)parent.data.get(n).getQuick(m);
+            parent.splitValue = (int) parent.data.get(n).getQuick(m);
             parent.left.data = lower;
             parent.right.data = upper;
         }
@@ -414,7 +414,7 @@ public final class DecisionTree {
      * @return its y value (class)
      */
     private int getClass(DoubleMatrix1D record) {
-        return (int)record.getQuick(forest.M);
+        return (int) record.getQuick(forest.M);
     }
 
     /**
