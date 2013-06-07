@@ -86,17 +86,17 @@ public final class DecisionTree {
         List<DoubleMatrix1D> test = new ArrayList<DoubleMatrix1D>();
 
         bootstrapSample(data, train, test);
-        testN = test.size();
+        this.testN = test.size();
 
-        TreeNode root = new TreeNode();
+        this.root = new TreeNode();
         root.data = train;
         recursiveSplit(root);
-        this.root = root;
+        System.out.println("\ndone split");
 
         int correct = 0;
         for (DoubleMatrix1D record : test) {
             int Class = evaluate(record);
-            this.forest.updateOOBEstimate(record, Class);
+            forest.updateOOBEstimate(record, Class);
             if (Class == getClass(record))
                 correct++;
         }
@@ -105,7 +105,7 @@ public final class DecisionTree {
         System.out.println("of left out data, error rate:" + err);
         this.correct = correct;
 
-        for (int m = 0; m < this.forest.M; m++) {
+        for (int m = 0; m < forest.M; m++) {
             List<DoubleMatrix1D> data1 = randomlyPermuteAttribute(copyData(test), m);
             int correctAfterPermute = 0;
             for (DoubleMatrix1D arr : data1) {
@@ -183,34 +183,15 @@ public final class DecisionTree {
     /**
      * @author kapelner
      */
-    private class TreeNode implements Cloneable {
+    private class TreeNode {
         public boolean isLeaf;
         public TreeNode left;
         public TreeNode right;
-        public int splitAttributeM;
+        public int splitAttributeM = -99;
         public Integer Class;
         public List<DoubleMatrix1D> data;
-        public int splitValue;
-        public int generation;
-
-        public TreeNode() {
-            splitAttributeM = -99;
-            splitValue = -99;
-            generation = 1;
-        }
-
-        public TreeNode clone() { //"data" element always null in clone
-            TreeNode copy = new TreeNode();
-            copy.isLeaf = isLeaf;
-            if (left != null) //otherwise null
-                copy.left = left.clone();
-            if (right != null) //otherwise null
-                copy.right = right.clone();
-            copy.splitAttributeM = splitAttributeM;
-            copy.Class = Class;
-            copy.splitValue = splitValue;
-            return copy;
-        }
+        public int splitValue = -99;
+        public int generation = 1;
     }
 
     private class DoubleHolder {
@@ -509,15 +490,15 @@ public final class DecisionTree {
         }
 
         /**
-         * Compare the two data records. They must be of type int[].
+         * Compares two data records.
          *
          * @param o1 data record A
          * @param o2 data record B
          * @return -1 if A[m] < B[m], 1 if A[m] > B[m], 0 if equal
          */
         public int compare(Object o1, Object o2) {
-            int a = ((int[]) o1)[m];
-            int b = ((int[]) o2)[m];
+            double a = ((DoubleMatrix1D) o1).getQuick(m);
+            double b = ((DoubleMatrix1D) o2).getQuick(m);
             if (a < b)
                 return -1;
             if (a > b)
