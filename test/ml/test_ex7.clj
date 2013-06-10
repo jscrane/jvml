@@ -1,7 +1,9 @@
-(ns ml.test-kmeans
+(ns ml.test-ex7
   (:use (clojure test)
         (incanter core)
-        (ml matlab kmeans testutil ex7a)))
+        [ml.ex7 :only (init-ex7)]
+        [ml.util :only (feature-normalize)]
+        (ml matlab kmeans pca testutil)))
 
 (deftest test-find-closest-centroids
   (let [{:keys [centroids X]} (init-ex7)]
@@ -23,3 +25,14 @@
         {:keys [centroids X]} (init-ex7)
         centroids (run-kmeans X centroids 10)]
     (is (approx (matrix [[1.9540 5.0256] [3.0437 1.0154] [6.0337 3.0005]]) centroids))))
+
+(deftest test-pca
+  (let [approx (approximately 1e-5)
+        X (:X (read-dataset-mat5 "data/ex7data1.mat"))
+        Xnorm (:data (feature-normalize X))
+        U (:U (pca Xnorm))
+        Z (project-data Xnorm U 1)
+        Xrec (recover-data Z U 1)]
+    (is (approx [-0.707107 -0.707107] (sel U :cols 0)))
+    (is (approx 1.481274 (first Z)))
+    (is (approx [-1.047419 -1.047419] (first Xrec)))))

@@ -1,7 +1,8 @@
-(ns ml.ex7a
+(ns ml.ex7
   (:import (java.awt.image BufferedImage))
   (:use (ml matlab kmeans)
-        (incanter core charts)
+        (incanter core)
+        [incanter.charts :only (scatter-plot add-points)]
         (seesaw core)))
 
 (defn init-ex7 []
