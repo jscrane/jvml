@@ -7,26 +7,25 @@
 (if (contains? args "pca")
   (let [X (:X (read-dataset-mat5 "data/ex7data1.mat"))
         {Xnorm :data mu :mean} (feature-normalize X)
-        p (pca Xnorm)
-        U (:U p)
-        p (plus mu (mult 1.5 (first (:S p)) (trans (sel U :cols 0))))
-        q (plus mu (mult 1.5 (second (:S p)) (trans (sel U :cols 1))))
-        Z (project-data Xnorm U 1)
-        Xrec (recover-data Z U 1)]
+        {:keys [U S]} (pca Xnorm)
+        p (plus mu (mult 1.5 (first S) (trans (sel U :cols 0))))
+        q (plus mu (mult 1.5 (second S) (trans (sel U :cols 1))))
+        Z (project-data Xnorm U 1)]
     (doto
-      (scatter-plot (sel X :cols 0) (sel X :cols 1))
+      (scatter-plot (sel X :cols 0) (sel X :cols 1) :x-label "" :y-label "" :title "Computed Eigenvectors")
       (add-lines [(first mu) (first p)] [(second mu) (second p)])
       (add-lines [(first mu) (first q)] [(second mu) (second q)])
       (view))
-    (let [p (scatter-plot (sel Xnorm :cols 0) (sel Xnorm :cols 1))]
-      (doto p
-        (add-points (sel Xrec :cols 0) (sel Xrec :cols 1))
-        (view))
-      (doall (map #(add-lines p [(first %1) (first %2)] [(second %1) (second %2)]) Xrec Xnorm)))))
+    (let [Xrec (recover-data Z U 1)
+          p (scatter-plot (sel Xnorm :cols 0) (sel Xnorm :cols 1) :x-label "" :y-label "" :title "Projected and Recovered after PCA")]
+      (add-points p (sel Xrec :cols 0) (sel Xrec :cols 1))
+      (doall (map (fn [[xr yr] [xn yn]] (add-lines p [xr xn] [yr yn])) Xrec Xnorm))
+      (view p))))
 
+; TODO: computing the covariance matrix takes forever...
 (if (contains? args "faces")
   (let [X (:X (read-dataset-mat5 "data/ex7faces.mat"))
-        Xnorm (:data (feature-normalize X))
+        Xnorm (:data (feature-normalize X))   ; 95s
         U (:U (pca Xnorm))
         ;      Z (project-data Xnorm U 100)
         ;      Xrec (recover-data Z U 100)

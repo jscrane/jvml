@@ -1,5 +1,5 @@
 * read-dataset-mat5 vs read-dataset
 * ex6 plotting decision boundaries (can't see how to do it with jlibsvm)
 * ex6_spam is very slow (but pretty slow on Octave too)
-* finish ex7
+* ex7: computing the covariance matrix takes forever
 * ex8

@@ -31,7 +31,7 @@
     (range a (+ b (/ d 2)) d)))
 
 (def gmax 50)
-(def grid (into [] (linspace -1 1.5 gmax)))
+(def grid (vec (linspace -1 1.5 gmax)))
 
 (defn- crossing [z row col]
   (let [grid-value (fn [row col] (if (or (= row gmax) (= col gmax)) 0 (z (+ (* row gmax) col))))
@@ -43,7 +43,7 @@
 (if *command-line-args*
   (let [{:keys [X y]} (init-ex2-reg)
         theta (optimize X y 1)
-        z (into [] (for [u grid v grid] (mmult (map-features [u] [v]) theta)))
+        z (vec (for [u grid v grid] (mmult (map-features [u] [v]) theta)))
         crossings (remove nil? (for [row (range gmax) col (range gmax)] (crossing z row col)))]
     (doto
       (scatter-plot (sel X :cols 1) (sel X :cols 2) :group-by y :series-label "y = 1" :x-label "Microchip Test 1" :y-label "Microchip Test 2" :legend true)

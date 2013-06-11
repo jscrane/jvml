@@ -14,7 +14,7 @@
 
 (defn compute-centroids [X idx k]
   (let [ic (zeroes k)
-        is (into [] (repeat k (zeroes (ncol X))))
+        is (vec (repeat k (zeroes (ncol X))))
         [s c] (reduce update-sums [is ic] (map vector (to-list X) idx))]
     (matrix (map div s c))))
 

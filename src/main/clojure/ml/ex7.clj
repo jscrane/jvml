@@ -13,7 +13,7 @@
 
 (defn- make-image [rows cols coll]
   (let [img (BufferedImage. cols rows BufferedImage/TYPE_INT_RGB)
-        data (into [] coll)]
+        data (vec coll)]
     (doall
       (for [i (range (count data))]
         (let [r (int (/ i rows)) c (rem i rows)]
@@ -42,7 +42,7 @@
         k 16
         centroids (run-kmeans X (init-centroids X k) 10)
         idx (find-closest-centroids X centroids)
-        rgb-centroids (into [] (map (fn [[r g b]] (rgb (int (* 255 r)) (int (* 255 g)) (int (* 255 b)))) centroids))]
+        rgb-centroids (vec (map (fn [[r g b]] (rgb (int (* 255 r)) (int (* 255 g)) (int (* 255 b)))) centroids))]
     (-> (frame :on-close :exit :content (left-right-split
                                           (label :icon (make-image rows cols (map rgb r g b)))
                                           (label :icon (make-image rows cols (map rgb-centroids idx)))))

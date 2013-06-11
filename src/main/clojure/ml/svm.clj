@@ -22,7 +22,7 @@
   prob)
 
 (defn to-boolean [y]
-  (into [] (map #(if (zero? (int %)) Boolean/FALSE Boolean/TRUE) y)))
+  (vec (map #(if (zero? (int %)) Boolean/FALSE Boolean/TRUE) y)))
 
 (defn make-params [epsilon C kernel]
   (let [builder (ImmutableSvmParameterGrid/builder)]

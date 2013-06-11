@@ -10,7 +10,7 @@
   (let [m (nrow X) X (add-intercept X) initial-theta (zeroes (ncol X))]
     (apply bind-rows
       (for [c (range 1 (inc num-labels))]
-        (let [samples (into [] (map #(if (= % c) 1 0) y))]
+        (let [samples (vec (map #(if (= % c) 1 0) y))]
           (gradient-descent (reg-logistic-cost-function X samples lambda) initial-theta :max-iter iters))))))
 
 (defn one-vs-all-accuracy [args lambda iters]
