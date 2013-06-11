@@ -17,13 +17,11 @@
   (let [initial-theta (zeroes (ncol X))]
     (gradient-descent (reg-logistic-cost-function X y lambda) initial-theta :alpha 0.05 :max-iter 5000)))
 
-(defn reg-cost [args theta]
-  (let [{:keys [X y]} args]
-    (logistic-cost X y theta)))
+(defn reg-cost [X y theta]
+  (logistic-cost X y theta))
 
-(defn reg-accuracy [args lambda]
-  (let [{:keys [X y]} args
-        theta (optimize X y lambda)]
+(defn reg-accuracy [X y lambda]
+  (let [theta (optimize X y lambda)]
     (double (accuracy (prediction (logistic-hypothesis theta X)) y))))
 
 (defn- linspace [a b n]

@@ -8,6 +8,5 @@
     {:X (:X d) :y (map int (:y d))
      :Theta1 (:Theta1 w) :Theta2 (:Theta2 w)}))
 
-(defn nn-accuracy [args]
-  (let [{:keys [Theta1 Theta2 X y]} args]
-    (double (accuracy (predict Theta1 Theta2 X) y))))
+(defn nn-accuracy [Theta1 Theta2 X y]
+  (double (accuracy (predict Theta1 Theta2 X) y)))

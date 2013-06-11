@@ -7,12 +7,12 @@
 (def approx (approximately 1e-5))
 
 (deftest ex1
-  (let [args (init-ex1)]
-    (is (approx 32.073 (initial-cost args)))
-    (is (approx 4519.8 (predict-profit args 3.5)))
-    (is (approx 45342 (predict-profit args 7)))))
+  (let [{:keys [X y theta]} (init-ex1)]
+    (is (approx 32.073 (initial-cost X y)))
+    (is (approx 4519.8 (predict-profit theta 3.5)))
+    (is (approx 45342 (predict-profit theta 7)))))
 
 (deftest ex1-multi
-  (let [args (init-ex1-multi)]
-    (is (approx 293081 (predict-gradient-descent args [1650 3])))
-    (is (approx 293081 (predict-normal-equation args [1650 3])))))
+  (let [{:keys [X y]} (init-ex1-multi)]
+    (is (approx 293081 (predict-gradient-descent X y [1650 3])))
+    (is (approx 293081 (predict-normal-equation X y [1650 3])))))

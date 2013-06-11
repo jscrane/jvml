@@ -1,6 +1,6 @@
 (defproject jvml "0.4"
   :repositories [["dev.davidsoergel.com releases" "http://dev.davidsoergel.com/artifactory/repo"]]
-  :dependencies [[org.clojure/clojure "1.5.0"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
                  [incanter/incanter-core "1.4.1"]
                  [incanter/incanter-charts "1.4.1"]
                  [net.sourceforge.jmatio/jmatio "1.0"]

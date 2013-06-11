@@ -13,9 +13,8 @@
         (let [samples (vec (map #(if (= % c) 1 0) y))]
           (gradient-descent (reg-logistic-cost-function X samples lambda) initial-theta :max-iter iters))))))
 
-(defn one-vs-all-accuracy [args lambda iters]
-  (let [{:keys [y X]} args
-        all-theta (matrix (one-vs-all X y 10 lambda iters))
+(defn one-vs-all-accuracy [X y lambda iters]
+  (let [all-theta (matrix (one-vs-all X y 10 lambda iters))
         s (mmult (add-intercept X) (trans all-theta))]
     (double (accuracy (map max-index s) y))))
 

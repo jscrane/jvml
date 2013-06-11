@@ -3,7 +3,7 @@
         (ml util optim linear)))
 
 (defn- compute-parameters [X y]
-  (gradient-descent (cost-fn linear-cost linear-hypothesis X y) [0 0] :alpha 0.01 :max-iter 1500))
+  (gradient-descent (linear-cost-function X y) [0 0] :alpha 0.01 :max-iter 1500))
 
 (defn init-ex1 []
   (let [data (to-matrix (read-dataset "data/ex1data1.txt"))
@@ -11,11 +11,11 @@
         X (add-intercept (sel data :cols 0))]
     { :y y :X X :theta (compute-parameters X y)}))
 
-(defn initial-cost [args]
-  (linear-cost (:X args) (:y args) [0 0]))
+(defn initial-cost [X y]
+  (linear-cost X y [0 0]))
 
-(defn predict-profit [args v]
-  (* (linear-hypothesis (:theta args) (trans [1 v])) 10000))
+(defn predict-profit [theta v]
+  (* (linear-hypothesis theta (trans [1 v])) 10000))
 
 (if *command-line-args*
   (let [{:keys [X y theta]} (init-ex1)]

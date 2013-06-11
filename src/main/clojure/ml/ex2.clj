@@ -10,17 +10,14 @@
     {:y y :norm norm :X X
      :theta (gradient-descent (logistic-cost-function X y) (zeroes 3) :alpha 0.05 :max-iter 20000)}))
 
-(defn cost [args theta]
-  (let [{:keys [X y]} args]
-    (logistic-cost X y theta)))
+(defn cost [X y theta]
+  (logistic-cost X y theta))
 
-(defn predict [args scores]
-  (let [{:keys [theta norm]} args]
-    (logistic-hypothesis theta (trans (into [1] (normalize (vector scores) (:mean norm) (:sigma norm)))))))
+(defn predict [theta norm scores]
+  (logistic-hypothesis theta (trans (into [1] (normalize (vector scores) (:mean norm) (:sigma norm))))))
 
-(defn training-accuracy [args]
-  (let [{:keys [X y theta]} args]
-    (double (accuracy (prediction (logistic-hypothesis theta X)) y))))
+(defn training-accuracy [X y theta]
+  (double (accuracy (prediction (logistic-hypothesis theta X)) y)))
 
 (defn- line-y [theta x]
   (let [[t0 t1 t2] theta]

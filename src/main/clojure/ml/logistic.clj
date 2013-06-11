@@ -15,8 +15,8 @@
 (defn logistic-cost
   "The logistic cost function"
   [^Matrix X ^Matrix y ^Matrix theta]
-  (let [h (logistic-hypothesis theta X) m (nrow y) o (ones m)]
-    (- (/ (sum (plus (mult (log h) y) (mult (minus o y) (log (minus o h))))) m))))
+  (let [h (logistic-hypothesis theta X) m (nrow y)]
+    (- (/ (sum (plus (mult (log h) y) (mult (minus 1 y) (log (minus 1 h))))) m))))
 
 (defn prediction
   "Returns a vector of 0s or 1s, depending on whether the corresponding element of the input vector is < 0.5."
