@@ -2,7 +2,9 @@
   (:use (incanter core charts)
         (ml matlab util pca)))
 
-(if *command-line-args*
+(def args (into #{} *command-line-args*))
+
+(if (contains? args "pca")
   (let [X (:X (read-dataset-mat5 "data/ex7data1.mat"))
         {Xnorm :data mu :mean} (feature-normalize X)
         p (pca Xnorm)
@@ -21,3 +23,13 @@
         (add-points (sel Xrec :cols 0) (sel Xrec :cols 1))
         (view))
       (doall (map #(add-lines p [(first %1) (first %2)] [(second %1) (second %2)]) Xrec Xnorm)))))
+
+(if (contains? args "faces")
+  (let [X (:X (read-dataset-mat5 "data/ex7faces.mat"))
+        Xnorm (:data (feature-normalize X))
+        U (:U (pca Xnorm))
+        ;      Z (project-data Xnorm U 100)
+        ;      Xrec (recover-data Z U 100)
+        ]
+
+    ))
