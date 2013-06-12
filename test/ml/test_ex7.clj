@@ -7,15 +7,15 @@
 
 (deftest test-find-closest-centroids
   (let [{:keys [centroids X]} (init-ex7)]
-    (is (= 0 (find-closest-centroid (trans [1.8421 4.6076]) centroids)))
-    (is (= 2 (find-closest-centroid (trans [5.6586 4.8000]) centroids)))
-    (is (= 1 (find-closest-centroid (trans [6.3526 3.2909]) centroids)))
-    (is (= [0 2 1] (find-closest-centroids (matrix (take 3 X)) centroids)))))
+    (is (= 0 (find-closest-centroid centroids [1.8421 4.6076])))
+    (is (= 2 (find-closest-centroid centroids [5.6586 4.8000])))
+    (is (= 1 (find-closest-centroid centroids [6.3526 3.2909])))
+    (is (= [0 2 1] (find-closest-centroids centroids (sel X :rows [0 1 2]))))))
 
 (deftest test-compute-centroids
   (let [approx (approximately 1e-6)
         {:keys [centroids X]} (init-ex7)
-        idx (find-closest-centroids X centroids)
+        idx (find-closest-centroids centroids X)
         new-centroids (map matrix (compute-centroids X idx 3))]
     (is (approx (matrix [[2.428301 3.157924] [5.813503 2.633656] [7.119387 3.616684]])
           new-centroids))))

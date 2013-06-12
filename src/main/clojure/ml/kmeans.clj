@@ -2,11 +2,11 @@
   (:use (ml util)
         (incanter core stats)))
 
-(defn find-closest-centroid [point centroids]
+(defn find-closest-centroid [centroids point]
   (indexes-of? < (map #(sum-of-squares (minus point %)) centroids)))
 
-(defn find-closest-centroids [X centroids]
-  (map #(find-closest-centroid % centroids) (to-list X)))
+(defn find-closest-centroids [centroids X]
+  (map (partial find-closest-centroid centroids) (to-list X)))
 
 (defn- update-sums [[sums counts] [point idx]]
   ; note this doall: otherwise the stack blows when the reduction is realised!
@@ -19,12 +19,10 @@
     (matrix (map div s c))))
 
 (defn- kmeans [X centroids]
-  (let [k (nrow centroids)
-        idx (find-closest-centroids X centroids)]
-    (compute-centroids X idx k)))
+  (compute-centroids X (find-closest-centroids centroids X) (nrow centroids)))
 
 (defn run-kmeans [X initial-centroids n]
-  (first (drop n (iterate #(kmeans X %) initial-centroids))))
+  (nth (iterate (partial kmeans X) initial-centroids) n))
 
 (defn init-centroids [X k]
   (sel X :rows (take k (permute (range (nrow X))))))

@@ -25,7 +25,7 @@
 (if (contains? args "kmeans")
   (let [{:keys [centroids X]} (init-ex7)
         centroids (run-kmeans X centroids 10)
-        idx (find-closest-centroids X centroids)]
+        idx (find-closest-centroids centroids X)]
     (doto
       (scatter-plot (sel X :cols 0) (sel X :cols 1) :x-label "" :y-label "" :group-by idx)
       (add-points (map first centroids) (map second centroids))
@@ -41,7 +41,7 @@
         X (div (bind-columns r g b) 255)
         k 16
         centroids (run-kmeans X (init-centroids X k) 10)
-        idx (find-closest-centroids X centroids)
+        idx (find-closest-centroids centroids X)
         rgb-centroids (vec (map (fn [[r g b]] (rgb (int (* 255 r)) (int (* 255 g)) (int (* 255 b)))) centroids))]
     (-> (frame :on-close :exit :content (left-right-split
                                           (label :icon (make-image rows cols (map rgb r g b)))
