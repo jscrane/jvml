@@ -19,7 +19,7 @@
         [(conj training-errors train) (conj validation-errors val)]))
     [[] []] (map #(vector (matrix (take % X)) (matrix (take % y))) ords)))
 
-(let [{:keys [y yval X Xval Xtest]} (init 850 #{:age :age? :sex :pclass :sibsp :parch :fare :fare? :embarked :embarked?})
+(let [{:keys [y yval X Xval Xtest]} (init 50 #{:age :age? :sex :pclass :sibsp :parch :fare :fare? :embarked :embarked?})
       Xi (add-intercept X)
       Xval (add-intercept Xval)
       Xtest (add-intercept Xtest)
@@ -30,7 +30,7 @@
       pred (prediction (logistic-hypothesis theta Xtest))]
   (println "training accuracy: " (double (accuracy (prediction (logistic-hypothesis theta Xi)) y)))
   (println "validation accuracy: " (double (accuracy (prediction (logistic-hypothesis theta Xval)) yval)))
-;  (spit "submission.txt" (apply str (map #(str % "\n") pred)))
+  (spit "submission.txt" (apply str (map #(str % "\n") pred)))
   (doto
     (xy-plot ords training :title "Logistic Regression Learning Curve"
       :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)

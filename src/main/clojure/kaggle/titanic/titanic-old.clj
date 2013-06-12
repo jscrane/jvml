@@ -34,9 +34,8 @@
 
 (def ticket-passengers
   (reduce (fn [tickets passenger]
-            (let [ticket (:ticket passenger)
-                  companions (tickets ticket)]
-              (assoc tickets ticket (conj (if companions companions #{}) passenger))))
+            (let [ticket (:ticket passenger)]
+              (assoc tickets ticket (conj (get tickets ticket #{}) passenger))))
     {} data))
 
 (def ticket-fares

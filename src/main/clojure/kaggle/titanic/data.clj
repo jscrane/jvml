@@ -25,12 +25,12 @@
   (let [ports (map :embarked (filter (comp pos? :embarked? ) passengers))]
     (int (median ports))))
 
+(defn- compute-medians [passengers f keys]
+  (reduce (fn [m k] (assoc m k (f passengers k))) {} keys))
+
 (defn- median-fare [passengers {pclass :pclass embarked :embarked}]
   (let [fares (map :fare (filter #(and (= pclass (:pclass %)) (= embarked (:embarked %))) passengers))]
     (median fares)))
-
-(defn- compute-medians [passengers f keys]
-  (reduce (fn [m k] (assoc m k (f passengers k))) {} keys))
 
 (defn- median-fares [passengers]
   (compute-medians passengers median-fare (for [e [0 1 2] c [1 2 3]] {:pclass c :embarked e})))
@@ -42,31 +42,31 @@
 (defn- median-ages [passengers]
   (compute-medians passengers median-age (for [c [1 2 3] s [0 1]] {:sex s :pclass c})))
 
-(defn- replace-missing-port [port passengers]
+(defn- missing-port [port passengers]
   (map #(if (pos? (:embarked? %)) % (assoc % :embarked port)) passengers))
 
-(defn- replace-missing-fare [fares passengers]
+(defn- missing-fare [fares passengers]
   (map #(if (pos? (:fare? %)) % (assoc % :fare (fares (select-keys % [:pclass :embarked])))) passengers))
 
-(defn- replace-missing-age [ages passengers]
+(defn- missing-age [ages passengers]
   (map #(if (pos? (:age? %)) % (assoc % :age (ages (select-keys % [:pclass :sex])))) passengers))
 
-(defn init [m-train interesting-keys]
+(defn init [m-val interesting-keys]
   (let [training-data (cleanup-classifiers (second (second (read-dataset "src/main/clojure/kaggle/titanic/train.csv" :header true))))
         test-data (cleanup-classifiers (second (second (read-dataset "src/main/clojure/kaggle/titanic/test.csv" :header true))))
         all-data (concat training-data test-data)
 
-        port (partial replace-missing-port (most-common-port all-data))
-        fare (partial replace-missing-fare (median-fares all-data))
-        age (partial replace-missing-age (median-ages all-data))
+        port (partial missing-port (most-common-port all-data))
+        fare (partial missing-fare (median-fares all-data))
+        age (partial missing-age (median-ages all-data))
+
         training (shuffle (-> training-data port fare age))
         test (-> test-data port fare age)
-
-        all-y (map :survived training)
-        all-X (map #(vec (vals (select-keys % interesting-keys))) training)
+        train-y (map :survived training)
+        train-X (map #(vec (vals (select-keys % interesting-keys))) training)
         test-X (map #(vec (vals (select-keys % interesting-keys))) test)]
     {:training training :test test
-      :all-y all-y :all-X all-X
-      :y (vec (take m-train all-y)) :yval (vec (drop m-train all-y))
-      :X (matrix (take m-train all-X)) :Xval (matrix (drop m-train all-X))
+      :train-y train-y :train-X train-X
+      :y (vec (drop m-val train-y)) :yval (vec (take m-val train-y))
+      :X (matrix (drop m-val train-X)) :Xval (matrix (take m-val train-X))
      :Xtest (matrix test-X)}))

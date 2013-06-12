@@ -2,14 +2,8 @@ package mlclass.randomforest;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Houses a Breiman Random Forest
@@ -34,12 +28,7 @@ public final class RandomForest {
     /**
      * the collection of the forest's decision trees
      */
-    private final List<DecisionTree> trees;
-
-    /**
-     * the number of trees in this forest
-     */
-    private final int numTrees;
+    private final Collection<DecisionTree> trees;
 
     /**
      * this is an array whose indices represent the forest-wide importance for that given attribute
@@ -65,16 +54,14 @@ public final class RandomForest {
      * @param data     the training data
      */
     public RandomForest(int numTrees, int C, int M, List<DoubleMatrix1D> data) {
-        this.numTrees = numTrees;
         this.C = C;
         this.M = M;
         this.Ms = (int) Math.round(Math.log(M) / Math.log(2) + 1);   //recommended by Breiman
-        this.trees = Collections.synchronizedList(new ArrayList<DecisionTree>(numTrees));
+        this.trees = new ConcurrentLinkedQueue<DecisionTree>();
 
-        System.out.print("creating " + numTrees + " trees in a random Forest. . . ");
+//        System.out.print("creating " + numTrees + " trees in a random Forest. . . ");
         this.estimateOOB = new ConcurrentHashMap<DoubleMatrix1D, int[]>(data.size());
 
-//        ExecutorService treePool = Executors.newFixedThreadPool(2);
         ExecutorService treePool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (int t = 0; t < numTrees; t++)
             treePool.execute(new CreateTree(data, this));
@@ -112,7 +99,7 @@ public final class RandomForest {
                 importances[i] += tree.importances[i];
         }
         for (int i = 0; i < M; i++)
-            importances[i] /= this.numTrees;
+            importances[i] /= numTrees;
     }
 
     /**
@@ -170,10 +157,9 @@ public final class RandomForest {
      */
     public int evaluate(DoubleMatrix1D record) {
         int[] counts = new int[C];
-        for (int t = 0; t < numTrees; t++) {
-            int Class = (trees.get(t)).evaluate(record);
-            counts[Class]++;
-        }
+        for (DecisionTree tree: trees)
+            counts[tree.evaluate(record)]++;
+
         return findMaxIndex(counts);
     }
 
