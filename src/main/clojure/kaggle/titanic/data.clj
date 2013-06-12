@@ -1,6 +1,9 @@
 (ns kaggle.titanic.data
   (:use (incanter core io stats)))
 
+;
+; mapping strings to integers and flagging missing fields (fare, age and embarked)
+;
 (defn- sex [pass] (assoc pass :sex (if (= (:sex pass) "male") 1 0)))
 
 (defn- embarked [pass]
@@ -21,6 +24,9 @@
 (defn- cleanup-classifiers [passengers]
   (map (comp sex embarked fare age) passengers))
 
+;
+; computing median values and adding where missing
+;
 (defn- most-common-port [passengers]
   (let [ports (map :embarked (filter (comp pos? :embarked? ) passengers))]
     (int (median ports))))
@@ -54,11 +60,15 @@
 (defn- read-csv [file]
   (second (second (read-dataset file :header true))))
 
+;
+; read the raw csv data and clean it up
+; replace missing fields by medians (using entire dataset)
+; shuffle the training set and partition into training and validation sets
 (defn init [m-val interesting-keys]
   (let [training-data (cleanup-classifiers (read-csv "src/main/clojure/kaggle/titanic/train.csv"))
         test-data (cleanup-classifiers (read-csv "src/main/clojure/kaggle/titanic/test.csv"))
-        all-data (concat training-data test-data)
 
+        all-data (concat training-data test-data)
         port (partial missing-port (most-common-port all-data))
         fare (partial missing-fare (median-fares all-data))
         age (partial missing-age (median-ages all-data))
