@@ -32,10 +32,10 @@
 (if *command-line-args*
   (let [{:keys [X y]} (read-dataset-mat5 "data/spamTrain.mat")
         model (train-model X y 0.1 (LinearKernel.))
-        train-accuracy (accuracy (svm-predict model X) (to-boolean y))
+        train-accuracy (accuracy (svm-predict model X) (map int y))
 
         {:keys [Xtest ytest]} (read-dataset-mat5 "data/spamTest.mat")
-        test-accuracy (accuracy (svm-predict model Xtest) (to-boolean ytest))]
+        test-accuracy (accuracy (svm-predict model Xtest) (map int ytest))]
 
     (println "training accuracy" (double (* train-accuracy 100)))
     (println "test accuracy" (double (* test-accuracy 100)))))
