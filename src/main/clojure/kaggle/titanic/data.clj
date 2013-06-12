@@ -51,9 +51,12 @@
 (defn- missing-age [ages passengers]
   (map #(if (pos? (:age? %)) % (assoc % :age (ages (select-keys % [:pclass :sex])))) passengers))
 
+(defn- read-csv [file]
+  (second (second (read-dataset file :header true))))
+
 (defn init [m-val interesting-keys]
-  (let [training-data (cleanup-classifiers (second (second (read-dataset "src/main/clojure/kaggle/titanic/train.csv" :header true))))
-        test-data (cleanup-classifiers (second (second (read-dataset "src/main/clojure/kaggle/titanic/test.csv" :header true))))
+  (let [training-data (cleanup-classifiers (read-csv "src/main/clojure/kaggle/titanic/train.csv"))
+        test-data (cleanup-classifiers (read-csv "src/main/clojure/kaggle/titanic/test.csv"))
         all-data (concat training-data test-data)
 
         port (partial missing-port (most-common-port all-data))
@@ -70,3 +73,6 @@
       :y (vec (drop m-val train-y)) :yval (vec (take m-val train-y))
       :X (matrix (drop m-val train-X)) :Xval (matrix (take m-val train-X))
      :Xtest (matrix test-X)}))
+
+(defn submit [predictions]
+  (spit "submission.txt" (apply str (map #(str % "\n") predictions))))

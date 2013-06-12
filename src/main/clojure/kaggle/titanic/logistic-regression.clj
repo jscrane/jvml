@@ -1,5 +1,5 @@
 (ns kaggle.titanic.logistic-regression
-  (use [kaggle.titanic.data :only (init)]
+  (use [kaggle.titanic.data :only (init submit)]
     (incanter core charts)
     (ml util logistic optim)))
 
@@ -26,11 +26,10 @@
       ords (range 50 (inc (nrow Xi)) 50)
       lambda 10
       [training validation] (learning-curves ords Xi y Xval yval lambda)
-      theta (train-logistic-regression Xi y lambda)
-      pred (prediction (logistic-hypothesis theta Xtest))]
+      theta (train-logistic-regression Xi y lambda)]
   (println "training accuracy: " (double (accuracy (prediction (logistic-hypothesis theta Xi)) y)))
   (println "validation accuracy: " (double (accuracy (prediction (logistic-hypothesis theta Xval)) yval)))
-  (spit "submission.txt" (apply str (map #(str % "\n") pred)))
+  (submit (prediction (logistic-hypothesis theta Xtest)))
   (doto
     (xy-plot ords training :title "Logistic Regression Learning Curve"
       :x-label "Number of examples" :y-label "Error" :series-label "Training" :legend true)

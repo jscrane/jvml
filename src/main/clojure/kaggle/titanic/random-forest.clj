@@ -1,7 +1,7 @@
 (ns kaggle.titanic.random-forest
   (:import (mlclass.randomforest RandomForest))
   (:use
-    [kaggle.titanic.data :only (init)]
+    [kaggle.titanic.data :only (init submit)]
     [incanter.core :only (bind-columns)]
     [ml.util :only (accuracy)]))
 
@@ -14,4 +14,4 @@
       brf (random-forest 5000 2 X y)]
   (println "training: " (double (accuracy (brf X) y)))
   (println "validation: " (double (accuracy (brf Xval) yval)))
-  (spit "submission.txt" (apply str (map #(str % "\n") (brf Xtest)))))
+  (submit (brf Xtest)))
