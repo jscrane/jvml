@@ -1,5 +1,5 @@
-(ns kaggle.titanic-lr
-  (use [kaggle.titanic :only (init)]
+(ns kaggle.titanic.logistic-regression
+  (use [kaggle.titanic.data :only (init)]
     (incanter core charts)
     (ml util logistic optim)))
 
@@ -19,7 +19,7 @@
         [(conj training-errors train) (conj validation-errors val)]))
     [[] []] (map #(vector (matrix (take % X)) (matrix (take % y))) ords)))
 
-(let [{:keys [y yval X Xval Xtest]} (init 850 #{:sex :pclass :sibsp :parch :fare :fare? :embarked :embarked?})
+(let [{:keys [y yval X Xval Xtest]} (init 850 #{:age :age? :sex :pclass :sibsp :parch :fare :fare? :embarked :embarked?})
       Xi (add-intercept X)
       Xval (add-intercept Xval)
       Xtest (add-intercept Xtest)
