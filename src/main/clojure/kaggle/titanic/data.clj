@@ -1,61 +1,7 @@
 (ns kaggle.titanic.data
-  (:use (incanter core io stats)))
-
-;
-; mapping strings to integers and flagging missing fields (fare, age and embarked)
-;
-(defn- sex [pass] (assoc pass :sex (if (= (:sex pass) "male") 1 0)))
-
-(defn- embarked [pass]
-  (let [emb (:embarked pass)
-        embarked? (if (= "" emb) 0 1)]
-    (assoc pass :embarked? embarked? :embarked (cond (= emb "C") 0 (= emb "S") 1 (= emb "Q") 2 :else -1))))
-
-(defn- fare [{f :fare s :sibsp p :parch :as pass}]
-  (let [fare (if (= "" f) 0 f)
-        fare? (if (zero? fare) 0 1)]
-    (assoc pass :fare? fare? :fare fare)))
-
-(defn- age [pass]
-  (let [a (:age pass)
-        age? (if (= "" a) 0 1)]
-    (assoc pass :age? age? :age (if (= "" a) 0 a))))
-
-(defn- cleanup-classifiers [passengers]
-  (map (comp sex embarked fare age) passengers))
-
-;
-; computing median values and adding where missing
-;
-(defn- most-common-port [passengers]
-  (let [ports (map :embarked (filter (comp pos? :embarked? ) passengers))]
-    (int (median ports))))
-
-(defn- compute-medians [passengers f keys]
-  (reduce (fn [m k] (assoc m k (f passengers k))) {} keys))
-
-(defn- median-fare [passengers {pclass :pclass embarked :embarked}]
-  (let [fares (map :fare (filter #(and (= pclass (:pclass %)) (= embarked (:embarked %))) passengers))]
-    (median fares)))
-
-(defn- median-fares [passengers]
-  (compute-medians passengers median-fare (for [e [0 1 2] c [1 2 3]] {:pclass c :embarked e})))
-
-(defn- median-age [passengers {pclass :pclass sex :sex}]
-  (let [ages (map :age (filter #(and (= pclass (:pclass %)) (= sex (:sex %))) passengers))]
-    (median ages)))
-
-(defn- median-ages [passengers]
-  (compute-medians passengers median-age (for [c [1 2 3] s [0 1]] {:sex s :pclass c})))
-
-(defn- missing-port [port passengers]
-  (map #(if (pos? (:embarked? %)) % (assoc % :embarked port)) passengers))
-
-(defn- missing-fare [fares passengers]
-  (map #(if (pos? (:fare? %)) % (assoc % :fare (fares (select-keys % [:pclass :embarked ])))) passengers))
-
-(defn- missing-age [ages passengers]
-  (map #(if (pos? (:age? %)) % (assoc % :age (ages (select-keys % [:pclass :sex ])))) passengers))
+  (:use (incanter core io stats)
+        [kaggle.titanic.classifiers :only (cleanup-classifiers)]
+        [kaggle.titanic.medians :only (most-common-port median-fares median-ages)]))
 
 (defn- read-csv [file]
   (second (second (read-dataset file :header true))))
@@ -69,9 +15,9 @@
         test-data (cleanup-classifiers (read-csv "src/main/clojure/kaggle/titanic/test.csv"))
 
         all-data (concat training-data test-data)
-        port (partial missing-port (most-common-port all-data))
-        fare (partial missing-fare (median-fares all-data))
-        age (partial missing-age (median-ages all-data))
+        port (most-common-port all-data)
+        fare (median-fares all-data)
+        age (median-ages all-data)
 
         training (shuffle (-> training-data port fare age))
         test (-> test-data port fare age)

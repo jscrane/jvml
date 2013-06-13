@@ -9,12 +9,13 @@
         brf (RandomForest. n C (count (first Xtrain)) (apply list vects))]
     {:evaluate (fn [X] (map #(.evaluate brf (.vectorize %)) X))
      :error (.error brf)
-     :importances (into (sorted-map) (zipmap feature-names (vec (.importances brf))))}))
+     :importances (into (sorted-map) (zipmap feature-names (.importances brf)))}))
 
-(let [features [:age :age? :embarked :embarked? :fare :fare? :parch :pclass :sex :sibsp ]
-      {:keys [y X Xtest]} (init 0 features)
-      {:keys [evaluate error importances]} (random-forest 2000 2 X y features)]
-  (println "error:" error)
-  (println "importances:" importances)
-  (println "training:" (double (accuracy (evaluate X) y)))
-  (submit (evaluate Xtest)))
+(time
+  (let [features [:age :family :fare :pclass :sex :title]
+        {:keys [y X Xtest]} (init 0 features)
+        {:keys [evaluate error importances]} (random-forest 2500 2 X y features)]
+    (println "error:" error)
+    (println "importances:" importances)
+    (println "training:" (double (accuracy (evaluate X) y)))
+    (submit (evaluate Xtest))))
