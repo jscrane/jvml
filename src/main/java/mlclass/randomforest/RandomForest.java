@@ -33,7 +33,7 @@ public final class RandomForest {
     /**
      * this is an array whose indices represent the forest-wide importance for that given attribute
      */
-    public final int[] importances;
+    public final double[] importances;
 
     /**
      * This maps from a data record to an array that records the classifications by the trees where it was a "left out" record (the indices are the class and the values are the counts)
@@ -73,8 +73,7 @@ public final class RandomForest {
         /**
          * This calculates the forest-wide error rate. For each "left out"
          * data record, if the class with the maximum count is equal to its actual
-         * class, then increment the number of correct. One minus the number correct
-         * over the total number is the error rate.
+         * class, then it's been predicted correctly.
          */
         double N = 0;
         int correct = 0;
@@ -90,7 +89,7 @@ public final class RandomForest {
         /**
          * This calculates the forest-wide importance levels for all attributes.
          */
-        importances = new int[M];
+        importances = new double[M];
         for (DecisionTree tree : trees) {
             for (int i = 0; i < M; i++)
                 importances[i] += tree.importances[i];

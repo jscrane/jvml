@@ -14,7 +14,12 @@
 (time
   (let [features [:pclass :sex :title]
         {:keys [y X Xtest]} (init 0 features)
-        {:keys [evaluate error importances]} (random-forest 2500 2 X y features)]
+        {:keys [evaluate error importances]}
+        (reduce (fn [{error :error :as best} _]
+                  (let [curr (random-forest 75 2 X y features)]
+                    (println _ error)
+                    (if (> error (:error curr)) curr best)))
+          {:error 1} (range 150))]
     (println "error:" error)
     (println "importances:" importances)
     (println "training:" (double (accuracy (evaluate X) y)))
