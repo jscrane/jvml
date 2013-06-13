@@ -7,7 +7,7 @@
 
 (defn- embarked [{e :embarked :as pass}]
   (let [embarked? (if (= "" e) 0 1)]
-    (assoc pass :embarked? embarked? :embarked (cond (= e "C") 0 (= e "S") 1 (= e "Q") 2 :else -1))))
+    (assoc pass :embarked? embarked? :embarked (cond (= e "C") 1 (= e "S") 2 (= e "Q") 3 :else 0))))
 
 (defn- fare [{f :fare s :sibsp p :parch :as pass}]
   (let [fare (if (= "" f) 0 f)
@@ -35,4 +35,3 @@
 
 (defn cleanup-classifiers [passengers]
   (map (comp sex embarked fare age cabin title) passengers))
-

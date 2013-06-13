@@ -19,7 +19,7 @@
         [(conj training-errors train) (conj validation-errors val)]))
     [[] []] (map #(vector (matrix (take % X)) (matrix (take % y))) ords)))
 
-(let [{:keys [y yval X Xval Xtest]} (init 50 #{:age :age? :sex :pclass :sibsp :parch :fare :fare? :embarked :embarked?})
+(let [{:keys [y yval X Xval Xtest]} (init 50 #{:age :family :pclass :sex :title})
       Xi (add-intercept X)
       Xval (add-intercept Xval)
       Xtest (add-intercept Xtest)

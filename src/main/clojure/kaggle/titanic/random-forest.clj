@@ -12,7 +12,7 @@
      :importances (into (sorted-map) (zipmap feature-names (.importances brf)))}))
 
 (time
-  (let [features [:age :family :fare :pclass :sex :title]
+  (let [features [:pclass :sex :title]
         {:keys [y X Xtest]} (init 0 features)
         {:keys [evaluate error importances]} (random-forest 2500 2 X y features)]
     (println "error:" error)

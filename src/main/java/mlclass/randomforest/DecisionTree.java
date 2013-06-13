@@ -128,7 +128,7 @@ public final class DecisionTree {
         while (true) {
             if (evalNode.isLeaf)
                 return evalNode.Class;
-            if (record.getQuick(evalNode.splitAttributeM) <= evalNode.splitValue)
+            if (record.getQuick(evalNode.splitAttribute) <= evalNode.splitValue)
                 evalNode = evalNode.left;
             else
                 evalNode = evalNode.right;
@@ -177,18 +177,18 @@ public final class DecisionTree {
     /**
      * @author kapelner
      */
-    private class TreeNode {
+    private final class TreeNode {
         public boolean isLeaf;
         public TreeNode left;
         public TreeNode right;
-        public int splitAttributeM = -99;
         public Integer Class;
         public List<DoubleMatrix1D> data;
-        public int splitValue = -99;
+        public int splitAttribute;
+        public double splitValue;
         public int generation = 1;
     }
 
-    private class DoubleHolder {
+    private final class DoubleHolder {
         public double d;
 
         public DoubleHolder(double d) {
@@ -378,8 +378,8 @@ public final class DecisionTree {
         if (n > Nsub)
             return 0;
 
-        List<DoubleMatrix1D> lower = getLower(parent.data, n);
-        List<DoubleMatrix1D> upper = getUpper(parent.data, n);
+        List<DoubleMatrix1D> lower = parent.data.subList(0, n);
+        List<DoubleMatrix1D> upper = parent.data.subList(n, parent.data.size());
         double[] pl = getClassProbs(lower);
         double[] pu = getClassProbs(upper);
         double eL = calculateEntropy(pl);
@@ -388,8 +388,8 @@ public final class DecisionTree {
         double e = (eL * lower.size() + eU * upper.size()) / ((double) Nsub);
         if (e < lowestE.d) {
             lowestE.d = e;
-            parent.splitAttributeM = m;
-            parent.splitValue = (int) parent.data.get(n).getQuick(m);
+            parent.splitAttribute = m;
+            parent.splitValue = parent.data.get(n).getQuick(m);
             parent.left.data = lower;
             parent.right.data = upper;
         }
@@ -430,43 +430,12 @@ public final class DecisionTree {
     }
 
     /**
-     * Split a data matrix and return the upper portion
-     *
-     * @param data   the data matrix to be split
-     * @param nSplit return all data records above this index in a sub-data matrix
-     * @return the upper sub-data matrix
-     */
-    private List<DoubleMatrix1D> getUpper(List<DoubleMatrix1D> data, int nSplit) {
-        int N = data.size();
-        List<DoubleMatrix1D> upper = new ArrayList<DoubleMatrix1D>(N - nSplit);
-        for (int n = nSplit; n < N; n++)
-            upper.add(data.get(n));
-        return upper;
-    }
-
-    /**
-     * Split a data matrix and return the lower portion
-     *
-     * @param data   the data matrix to be split
-     * @param nSplit return all data records below this index in a sub-data matrix
-     * @return the lower sub-data matrix
-     */
-    private List<DoubleMatrix1D> getLower(List<DoubleMatrix1D> data, int nSplit) {
-        List<DoubleMatrix1D> lower = new ArrayList<DoubleMatrix1D>(nSplit);
-        for (int n = 0; n < nSplit; n++)
-            lower.add(data.get(n));
-        return lower;
-    }
-
-    /**
      * This class compares two data records by numerically comparing a specified attribute
      *
      * @author kapelner
      */
-    private final class AttributeComparator implements Comparator {
-        /**
-         * the specified attribute
-         */
+    private final class AttributeComparator implements Comparator<DoubleMatrix1D> {
+
         private final int m;
 
         /**
@@ -485,9 +454,8 @@ public final class DecisionTree {
          * @param o2 data record B
          * @return -1 if A[m] < B[m], 1 if A[m] > B[m], 0 if equal
          */
-        public int compare(Object o1, Object o2) {
-            double a = ((DoubleMatrix1D) o1).getQuick(m);
-            double b = ((DoubleMatrix1D) o2).getQuick(m);
+        public int compare(DoubleMatrix1D o1, DoubleMatrix1D o2) {
+            double a = o1.getQuick(m), b = o2.getQuick(m);
             if (a < b)
                 return -1;
             if (a > b)
