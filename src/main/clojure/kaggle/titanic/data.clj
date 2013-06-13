@@ -11,10 +11,10 @@
         embarked? (if (= "" emb) 0 1)]
     (assoc pass :embarked? embarked? :embarked (cond (= emb "C") 0 (= emb "S") 1 (= emb "Q") 2 :else -1))))
 
-(defn- fare [pass]
-  (let [f (:fare pass)
-        fare? (if (or (= "" f) (zero? f)) 0 1)]
-    (assoc pass :fare? fare? :fare (if (= "" f) 0 f))))
+(defn- fare [{f :fare s :sibsp p :parch :as pass}]
+  (let [fare (if (= "" f) 0 f)
+        fare? (if (zero? fare) 0 1)]
+    (assoc pass :fare? fare? :fare fare)))
 
 (defn- age [pass]
   (let [a (:age pass)
@@ -52,10 +52,10 @@
   (map #(if (pos? (:embarked? %)) % (assoc % :embarked port)) passengers))
 
 (defn- missing-fare [fares passengers]
-  (map #(if (pos? (:fare? %)) % (assoc % :fare (fares (select-keys % [:pclass :embarked])))) passengers))
+  (map #(if (pos? (:fare? %)) % (assoc % :fare (fares (select-keys % [:pclass :embarked ])))) passengers))
 
 (defn- missing-age [ages passengers]
-  (map #(if (pos? (:age? %)) % (assoc % :age (ages (select-keys % [:pclass :sex])))) passengers))
+  (map #(if (pos? (:age? %)) % (assoc % :age (ages (select-keys % [:pclass :sex ])))) passengers))
 
 (defn- read-csv [file]
   (second (second (read-dataset file :header true))))
@@ -75,13 +75,15 @@
 
         training (shuffle (-> training-data port fare age))
         test (-> test-data port fare age)
+        select-interesting (fn [X] (vec (vals (into (sorted-map) (select-keys X interesting-keys)))))
+
         train-y (map :survived training)
-        train-X (map #(vec (vals (select-keys % interesting-keys))) training)
-        test-X (map #(vec (vals (select-keys % interesting-keys))) test)]
+        train-X (map select-interesting training)
+        test-X (map select-interesting test)]
     {:training training :test test
-      :train-y train-y :train-X train-X
-      :y (vec (drop m-val train-y)) :yval (vec (take m-val train-y))
-      :X (matrix (drop m-val train-X)) :Xval (matrix (take m-val train-X))
+     :train-y train-y :train-X train-X
+     :y (vec (drop m-val train-y)) :yval (vec (take m-val train-y))
+     :X (matrix (drop m-val train-X)) :Xval (matrix (take m-val train-X))
      :Xtest (matrix test-X)}))
 
 (defn submit [predictions]

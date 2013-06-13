@@ -80,8 +80,6 @@ public final class DecisionTree {
         N = data.size();
         importances = new int[forest.M];
 
-//        System.out.println("\nMake a Dtree N:" + N + " M:" + forest.M + " Ms:" + forest.Ms);
-
         List<DoubleMatrix1D> train = new ArrayList<DoubleMatrix1D>(); //data becomes the "bootstrap" - that's all it knows
         List<DoubleMatrix1D> test = new ArrayList<DoubleMatrix1D>();
 
@@ -91,7 +89,6 @@ public final class DecisionTree {
         this.root = new TreeNode();
         root.data = train;
         recursiveSplit(root);
-//        System.out.println("\ndone split");
 
         int correct = 0;
         for (DoubleMatrix1D record : test) {
@@ -100,9 +97,6 @@ public final class DecisionTree {
             if (Class == getClass(record))
                 correct++;
         }
-
-        double err = 1 - correct / ((double) test.size());
-//        System.out.println("of left out data, error rate:" + err);
         this.correct = correct;
 
         for (int m = 0; m < forest.M; m++) {
@@ -218,8 +212,7 @@ public final class DecisionTree {
      * now chosen by the {@link #getVarsToInclude() getVarsToInclude} function
      * </li>
      * <li>Step C
-     * For all Ms variables, first {@link #sortAtAttribute(List, int) sort} the data records by that attribute
-     * , then look through the values from lowest to
+     * For all Ms variables, first sort the data records by that attribute, then look through the values from lowest to
      * highest. If value i is not equal to value i+1, record i in the list of "indicesToCheck."
      * This speeds up the splitting. If the number of indices in indicesToCheck >  MIN_SIZE_TO_CHECK_EACH
      * then we will only {@link #checkPosition(int, int, int, DoubleHolder, DecisionTree.TreeNode) check} the
@@ -267,7 +260,7 @@ public final class DecisionTree {
             //-------------------------------Step C
             for (int m : vars) {
 
-                sortAtAttribute(parent.data, m);
+                Collections.sort(parent.data, new AttributeComparator(m));
 
                 List<Integer> indicesToCheck = new ArrayList<Integer>();
                 for (int n = 1; n < Nsub; n++) {
@@ -387,10 +380,6 @@ public final class DecisionTree {
 
         List<DoubleMatrix1D> lower = getLower(parent.data, n);
         List<DoubleMatrix1D> upper = getUpper(parent.data, n);
-//        if (lower == null)
-//            System.out.println("lower list null");
-//        if (upper == null)
-//            System.out.println("upper list null");
         double[] pl = getClassProbs(lower);
         double[] pu = getClassProbs(upper);
         double eL = calculateEntropy(pl);
@@ -478,7 +467,7 @@ public final class DecisionTree {
         /**
          * the specified attribute
          */
-        private int m;
+        private final int m;
 
         /**
          * Create a new comparator
@@ -508,17 +497,6 @@ public final class DecisionTree {
     }
 
     /**
-     * Sorts a data matrix by an attribute from lowest record to highest record
-     *
-     * @param data the data matrix to be sorted
-     * @param m    the attribute to sort on
-     */
-    @SuppressWarnings("unchecked")
-    private void sortAtAttribute(List<DoubleMatrix1D> data, int m) {
-        Collections.sort(data, new AttributeComparator(m));
-    }
-
-    /**
      * Given a data matrix, return a probability mass function representing
      * the frequencies of a class in the matrix (the y values)
      *
@@ -541,11 +519,6 @@ public final class DecisionTree {
     }
 
     /**
-     * ln(2)
-     */
-    private static final double logoftwo = Math.log(2);
-
-    /**
      * Given a probability mass function indicating the frequencies of
      * class representation, calculate an "entropy" value using the method
      * in Tan Steinbach Kumar's "Data Mining" textbook
@@ -557,7 +530,7 @@ public final class DecisionTree {
         double e = 0;
         for (double p : ps) {
             if (p != 0) //otherwise it will divide by zero - see TSK p159
-                e += p * Math.log(p) / logoftwo;
+                e += p * Math.log(p) / Math.log(2);
         }
         return -e; //according to TSK p158
     }

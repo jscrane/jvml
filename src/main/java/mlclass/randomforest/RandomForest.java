@@ -58,8 +58,6 @@ public final class RandomForest {
         this.M = M;
         this.Ms = (int) Math.round(Math.log(M) / Math.log(2) + 1);   //recommended by Breiman
         this.trees = new ConcurrentLinkedQueue<DecisionTree>();
-
-//        System.out.print("creating " + numTrees + " trees in a random Forest. . . ");
         this.estimateOOB = new ConcurrentHashMap<DoubleMatrix1D, int[]>(data.size());
 
         ExecutorService treePool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -88,7 +86,6 @@ public final class RandomForest {
                 correct++;
         }
         error = 1 - correct / N;
-//        System.out.println("Forest error rate:" + error);
 
         /**
          * This calculates the forest-wide importance levels for all attributes.
