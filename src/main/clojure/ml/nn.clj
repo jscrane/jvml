@@ -7,10 +7,6 @@
         b (logistic-hypothesis (trans Theta2) (add-intercept a))]
     (map max-index b)))
 
-(defn random-matrix [[nrow ncol] epsilon]
-  (let [r (fn [_] (- (* 2 epsilon (Math/random)) epsilon))]
-    (matrix (partition ncol (take (* nrow ncol) (iterate r (r 0)))))))
-
 (defn- zero-first-column [mat]
   (bind-columns (zeroes (nrow mat)) (sel mat :except-cols 0)))
 
@@ -30,14 +26,6 @@
             delta1 (mmult (trans d2) a1) ; 900ms!
             Theta1-reg (zero-first-column Theta1)
             Theta2-reg (zero-first-column Theta2)
-            reg (* lambda 0.5 (+ (sum (map sum-of-squares Theta1-reg)) (sum (map sum-of-squares Theta2-reg))))]
+            reg (* lambda 0.5 (+ (sumsq Theta1-reg) (sumsq Theta2-reg)))]
         {:cost (/ (- reg cost) m)
          :grad [(div (plus delta1 (mult lambda Theta1-reg)) m) (div (plus delta2 (mult lambda Theta2-reg)) m)]}))))
-
-(defn unroll [[r1 c1] [r2 c2] v]
-  (let [e1 (* r1 c1)
-        a (seq (.toArray v))]
-    [(matrix (take e1 a) c1) (matrix (drop e1 a) c2)]))
-
-(defn rollup [mats]
-  (.vectorize (matrix (mapcat flatten mats))))

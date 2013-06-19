@@ -9,6 +9,9 @@
 
 (def std (comp sqrt variance))
 
+(defn sumsq [^Matrix M]
+  (let [v (vec (vectorize M))] (mmult (trans v) v)))
+
 (defn feature-normalize [^Matrix X]
   (let [m (nrow X) xt (trans X) mu (vec (map mean xt)) sigma (vec (map std xt))]
     {:data (div (minus X (matrix (repeats m mu))) (matrix (repeats m sigma)))
@@ -34,3 +37,7 @@
   "Returns how accurately the prediction vector (p) reflects the labels (y)"
   [p y]
   (/ (count (filter true? (map = p y))) (nrow y)))
+
+(defn random-matrix [[nrow ncol] epsilon]
+  (let [r (fn [_] (- (* 2 epsilon (Math/random)) epsilon))]
+    (matrix (partition ncol (take (* nrow ncol) (iterate r (r 0)))))))

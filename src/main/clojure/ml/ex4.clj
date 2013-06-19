@@ -20,7 +20,6 @@
   (time
     (let [{:keys [Theta1 Theta2 X yb y]} (init-ex4)
           eps 0.25
-          d1 (dim Theta1) d2 (dim Theta2)
-          [Th1 Th2] (fmincg (neural-net-cost-fn X yb 1.0) [(random-matrix d1 eps) (random-matrix d2 eps)]
-                      :max-iter 50 :verbose true :reshape [rollup (partial unroll d1 d2)])]
+          [Th1 Th2] (fmincg (neural-net-cost-fn X yb 1.0) [(random-matrix (dim Theta1) eps) (random-matrix (dim Theta2) eps)]
+                      :max-iter 50 :verbose true :reshape (reshape Theta1 Theta2))]
       (println "predict" (double (accuracy (predict Th1 Th2 X) y))))))
