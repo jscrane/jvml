@@ -14,7 +14,6 @@
           J (/ (sumsq Dr) 2)
           X-grad (mmult Dr Theta)
           Theta-grad (mmult (trans Dr) X)]
-      (println J)
       {:cost (+ J (* (+ (sumsq Theta) (sumsq X)) lambda 0.5))
        :grad [(plus X-grad (mult X lambda)) (plus Theta-grad (mult Theta lambda))]})))
 
@@ -22,8 +21,8 @@
   (let [Ymean (vec (map #(mean (filter pos? %)) Y))]
     [(matrix (map minus Y Ymean)) Ymean]))
 
-(defn- normal-matrix [n cols]
-  (matrix (sample-normal n) cols))
+(defn- normal-matrix [rows cols]
+  (matrix (sample-normal (* rows cols)) cols))
 
 (defn learn-movie-ratings [Y R new-ratings lambda]
   (let [[num-movies _] (dim Y)
@@ -34,13 +33,11 @@
         num-features 10
 
         [Ynorm Ymean] (normalize-ratings Y)
-        X-init (normal-matrix (* num-movies num-features) num-features)
-        Theta-init (normal-matrix (* num-users num-features) num-features)
+        inits [(normal-matrix num-movies num-features) (normal-matrix num-users num-features)]
         [X Theta] (fmincg
-                    (cofi-cost-fn Ynorm R lambda) [X-init Theta-init]
-                    :reshape (reshape X-init Theta-init) :max-iter 2 :verbose true)
-        p (mmult X (trans Theta))]
-    (vec (map + (sel p :cols 0) Ymean))))
+                    (cofi-cost-fn Ynorm R lambda) inits
+                    :reshape (reshape inits) :max-iter 100 :verbose true)]
+    (vec (map + (sel (mmult X (trans Theta)) :cols 0) Ymean))))
 
 (time
   (if *command-line-args*

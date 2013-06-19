@@ -52,29 +52,24 @@
               (Tuple. cost (rollup grad)))))
         (rollup initial-theta) max-iter verbose))))
 
+(defn- unroll [dims m]
+  (let [v (vec (.toArray m))]
+    (second
+      (reduce
+        (fn [[off mats] [r c]]
+          (let [end (+ off (* r c))]
+            [end (conj mats (matrix (subvec v off end) c))]))
+        [0 []] dims))))
 
-(defn- unroll2
-  "
-  Unrolls a vector into two matrices.
-  "
-  [[r1 c1] [r2 c2] v]
-  (let [e1 (* r1 c1)
-        a (seq (.toArray v))]
-    [(matrix (take e1 a) c1) (matrix (drop e1 a) c2)]))
-
-(defn- rollup-mats
-  "
-  Rolls-up a collection of matrices into a vector.
-  "
-  [mats]
+(defn- rollup [mats]
   (.vectorize (matrix (mapcat flatten mats))))
 
 (defn reshape
   "
   Makes a pair of rollup/unroll functions for :reshape
   "
-  [M N]
-  [rollup-mats (partial unroll2 (dim M) (dim N))])
+  [mats]
+  [rollup (partial unroll (map dim mats))])
 
 (defn ^Matrix linear-gradient [hf ^Matrix X ^Matrix y theta]
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]

@@ -3,4 +3,3 @@
 * ex6_spam is very slow (but pretty slow on Octave too)
 * ex7: computing the covariance matrix takes forever
 * incanter 1.5.1
-* cleanup ml.optim/reshape: should take any number of matrices
