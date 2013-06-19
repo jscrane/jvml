@@ -39,6 +39,18 @@
                     :reshape (reshape inits) :max-iter 100 :verbose true)]
     (vec (map + (sel (mmult X (trans Theta)) :cols 0) Ymean))))
 
+;[They Made Me a Criminal (1939) 5.000000044741122]
+;[Saint of Fort Washington, The (1993) 5.000000016299654]
+;[Santa with Muscles (1996) 5.000000014453069]
+;[Entertaining Angels: The Dorothy Day Story (1996) 5.000000009137338]
+;[Marlene Dietrich: Shadow and Light (1996)  4.999999998693655]
+;[Prefontaine (1997) 4.999999990145056]
+;[Someone Else's America (1995) 4.999999986348401]
+;[Star Kid (1997) 4.999999975878698]
+;[Aiqing wansui (1994) 4.999999968434848]
+;[Great Day in Harlem, A (1994) 4.999997619647857]
+;"Elapsed time: 5178185.169068 msecs"
+
 (time
   (if *command-line-args*
     (let [my-ratings [0 4, 6 3, 11 5, 53 4, 63 5, 65 3, 68 5, 97 2, 182 4, 225 5, 354 5]
