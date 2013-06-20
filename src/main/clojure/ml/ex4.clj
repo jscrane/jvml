@@ -11,6 +11,12 @@
      :yb (matrix (map #(boolean-vector 10 %) y))
      :Theta1 (:Theta1 W) :Theta2 (:Theta2 W)}))
 
+
+(defn- random-matrix [M epsilon]
+  (let [[nrow ncol] (dim M)
+        r (fn [_] (- (* 2 epsilon (Math/random)) epsilon))]
+    (matrix (partition ncol (take (* nrow ncol) (iterate r (r 0)))))))
+
 ; iter  cost  predict time
 ; 50    0.49  96.6%   123
 ; 100   0.36  98.5%   218
@@ -20,6 +26,7 @@
   (time
     (let [{:keys [Theta1 Theta2 X yb y]} (init-ex4)
           eps 0.25
-          [Th1 Th2] (fmincg (neural-net-cost-fn X yb 1.0) [(random-matrix (dim Theta1) eps) (random-matrix (dim Theta2) eps)]
-                      :max-iter 50 :verbose true :reshape (reshape [Theta1 Theta2]))]
-      (println "predict" (double (accuracy (predict Th1 Th2 X) y))))))
+          [T1 T2] (fmincg
+                    (neural-net-cost-fn X yb 1.0)
+                    [(random-matrix Theta1 eps) (random-matrix Theta2 eps)] :max-iter 50 :verbose true)]
+      (println "predict" (double (accuracy (predict T1 T2 X) y))))))

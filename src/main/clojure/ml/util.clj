@@ -37,7 +37,3 @@
   "Returns how accurately the prediction vector (p) reflects the labels (y)"
   [p y]
   (/ (count (filter true? (map = p y))) (nrow y)))
-
-(defn random-matrix [[nrow ncol] epsilon]
-  (let [r (fn [_] (- (* 2 epsilon (Math/random)) epsilon))]
-    (matrix (partition ncol (take (* nrow ncol) (iterate r (r 0)))))))

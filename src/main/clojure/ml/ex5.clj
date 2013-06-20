@@ -6,7 +6,7 @@
   (assoc (read-dataset-mat5 "data/ex5data1.mat") :lambdas [0 0.001 0.003 0.01 0.03 0.1 0.3 1 3 10]))
 
 (defn train-linear-regression [X y lambda]
-  (fmincg (reg-linear-cost-function X y lambda) (zeroes (ncol X))))
+  (fmincg (reg-linear-cost-function X y lambda) (matrix (zeroes (ncol X)))))
 
 (defn- learning-curve [Xtrain ytrain Xval yval lambda]
   (let [theta (train-linear-regression Xtrain ytrain lambda)

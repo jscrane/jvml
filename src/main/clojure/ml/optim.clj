@@ -26,32 +26,6 @@
         f (if (matrix? initial-theta) mf vf)]
     (first (drop max-iter (iterate f initial-theta)))))
 
-(defn fmincg
-  "
-  Finds the model parameters which minimize the given cost function using the method of Conjugate-Gradients.
-
-  initial-theta: the initial model parameters.
-  Options:
-    :max-iter (default 100)
-      the number of iterations to run
-    :verbose (default false)
-      whether to display the cost after every round
-    :reshape
-      functions to rollup/unroll the parameters to the cost-fn
-  "
-  [cost-fn initial-theta & options]
-  (let [opts (when options (apply assoc {} options))
-        verbose (or (:verbose opts) false)
-        max-iter (or (:max-iter opts) 100)
-        [rollup unroll] (or (:reshape opts) [#(.vectorize (matrix %)) #(matrix (.toArray %))])]
-    (unroll
-      (Fmincg/minimize
-        (proxy [CostFunction] []
-          (evaluateCost [theta]
-            (let [{:keys [cost grad]} (cost-fn (unroll theta))]
-              (Tuple. cost (rollup grad)))))
-        (rollup initial-theta) max-iter verbose))))
-
 (defn- unroll [dims m]
   (let [v (vec (.toArray m))]
     (second
@@ -64,12 +38,38 @@
 (defn- rollup [mats]
   (.vectorize (matrix (mapcat flatten mats))))
 
-(defn reshape
+(defn fmincg
   "
-  Makes a pair of rollup/unroll functions for :reshape
+  Finds the model parameters which minimize a cost function using the method of Conjugate-Gradients.
+
+  cost-fn: the cost function to minimise.
+
+  initial-theta: the initial model parameters; if it is not a matrix, it's assumed to be a sequence
+  of matrices, unless the :reshape option is supplied (see below).
+
+  Options:
+    :max-iter (default 100)
+      the number of iterations to run
+    :verbose (default false)
+      whether to display the cost after every round
+    :reshape
+      a vector of functions to rollup/unroll the parameters to the cost-fn
   "
-  [mats]
-  [rollup (partial unroll (map dim mats))])
+  [cost-fn initial-theta & options]
+  (let [opts (when options (apply assoc {} options))
+        verbose (or (:verbose opts) false)
+        max-iter (or (:max-iter opts) 100)
+        [rollup unroll] (or (:reshape opts)
+                          (if (matrix? initial-theta)
+                            [#(.vectorize %) #(matrix (.toArray %))]
+                            [rollup (partial unroll (map dim initial-theta))]))]
+    (unroll
+      (Fmincg/minimize
+        (proxy [CostFunction] []
+          (evaluateCost [theta]
+            (let [{:keys [cost grad]} (cost-fn (unroll theta))]
+              (Tuple. cost (rollup grad)))))
+        (rollup initial-theta) max-iter verbose))))
 
 (defn ^Matrix linear-gradient [hf ^Matrix X ^Matrix y theta]
   (let [m (nrow y) h (hf theta X) d (minus h y) xt (trans X)]

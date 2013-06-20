@@ -33,10 +33,10 @@
         num-features 10
 
         [Ynorm Ymean] (normalize-ratings Y)
-        inits [(normal-matrix num-movies num-features) (normal-matrix num-users num-features)]
         [X Theta] (fmincg
-                    (cofi-cost-fn Ynorm R lambda) inits
-                    :reshape (reshape inits) :max-iter 100 :verbose true)]
+                    (cofi-cost-fn Ynorm R lambda)
+                    [(normal-matrix num-movies num-features) (normal-matrix num-users num-features)]
+                    :max-iter 100 :verbose true)]
     (vec (map + (sel (mmult X (trans Theta)) :cols 0) Ymean))))
 
 ;[They Made Me a Criminal (1939) 5.000000044741122]

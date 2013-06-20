@@ -4,7 +4,7 @@
     (ml util logistic optim)))
 
 (defn- train-logistic-regression [X y lambda]
-  (fmincg (reg-logistic-cost-function X y lambda) (zeroes (count (first X))) :max-iter 1500))
+  (fmincg (reg-logistic-cost-function X y lambda) (matrix (zeroes (count (first X)))) :max-iter 1500))
 
 (defn- learning-curve [Xtrain ytrain Xval yval lambda]
   (let [theta (train-logistic-regression Xtrain ytrain lambda)
