@@ -40,8 +40,8 @@
 ; see svmTrain.m: only pick SVs with alpha > 0
 (defn model-vectors [model]
   (let [idx (map first (filter #(pos? (second %)) (map-indexed vector (.alphas model))))
-        vects (map #(seq (.values %)) (.SVs model))]
-    (map #(nth vects %) idx)))
+        vects (vec (map #(seq (.values %)) (.SVs model)))]
+    (map vects idx)))
 
 (defn svm-predict [model Xval]
   (map #(if (.predictLabel model (sparse-vector %)) 1 0) Xval))

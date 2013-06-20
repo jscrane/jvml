@@ -3,3 +3,5 @@
 * ex6_spam is very slow (but pretty slow on Octave too)
 * ex7: computing the covariance matrix takes forever
 * incanter 1.5.1
+* ex8 is really slow
+* some repetition in :reshape args vs initial parameters for fmincg (maybe always reshape on args by default?)
