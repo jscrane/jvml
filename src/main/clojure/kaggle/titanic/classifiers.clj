@@ -29,9 +29,9 @@
         parts (rest (re-matches munge-re name))]
     (zipmap [:last :title :first :unmarried ] parts)))
 
-(defn- title [{name :name :as pass}]
+(defn- title [{name :name sex :sex :as pass}]
   (let [t (:title (name-parts name))]
-    (assoc pass :title (cond (= t "Mr") 1 (= t "Mrs") 2 (= t "Master") 3 (= t "Miss") 4 :else 0))))
+    (assoc pass :title (cond (= t "Mr") 1 (= t "Mrs") 2 (= t "Master") 3 (= t "Miss") 4 :else (+ 5 sex)))))
 
 (defn cleanup-classifiers [passengers]
-  (map (comp sex embarked fare age cabin title) passengers))
+  (map (comp embarked fare age cabin title sex) passengers))

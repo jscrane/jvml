@@ -12,7 +12,7 @@
      :importances (into (sorted-map) (zipmap feature-names (.importances brf)))}))
 
 (time
-  (let [features [:pclass :sex :title]
+  (let [features [:pclass :title]
         {:keys [y X Xtest]} (init 0 features)
         {:keys [evaluate error importances]}
         (reduce (fn [{error :error :as best} _]

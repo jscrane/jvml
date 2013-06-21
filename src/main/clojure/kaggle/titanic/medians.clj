@@ -33,5 +33,5 @@
   (map #(if (pos? (:age? %)) % (assoc % :age (ages (select-keys % [:title :pclass])))) passengers))
 
 (defn median-ages [passengers]
-  (let [ages (compute-medians passengers median-age (for [c [1 2 3] t [0 1 2 3 4]] {:pclass c :title t}))]
+  (let [ages (compute-medians passengers median-age (for [c [1 2 3] t [1 2 3 4 5 6]] {:pclass c :title t}))]
     (partial missing-age ages)))
