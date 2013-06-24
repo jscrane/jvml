@@ -37,3 +37,14 @@
   "Returns how accurately the prediction vector (p) reflects the labels (y)"
   [p y]
   (/ (count (filter true? (map = p y))) (nrow y)))
+
+;
+; http://www.learningclojure.com/2010/09/astonishing-macro-of-narayan-singhal.html
+;
+(defmacro def-let
+  "like let, but binds the expressions globally."
+  [bindings & more]
+  (let [let-expr (macroexpand `(let ~bindings))
+        names-values (partition 2 (second let-expr))
+        defs   (map #(cons 'def %) names-values)]
+    (concat (list 'do) defs more)))
