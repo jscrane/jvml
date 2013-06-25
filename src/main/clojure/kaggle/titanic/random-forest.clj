@@ -19,13 +19,12 @@
     {:error 1} (range iter)))
 
 (defn train-forest [y train features title]
-  ; this relies on :title being the last key in the sorted-set (yuk)
-  (let [X (select-features (conj features :title ) train)
-        [_ cols] (dim X)
-        rows (vec (filter identity (map-indexed #(if (= (int (last %2)) title) %1) X)))
+  (let [X (select-features features train)
+        rows (vec (filter identity (map-indexed #(if (= (int %2) title) %1) (select-features [:title] train))))
         title-y (sel (matrix y) :rows rows)
-        title-X (sel X :rows rows :except-cols (dec cols))]
-    (best-forest title-X title-y features 250)))
+        title-X (sel X :rows rows)]
+    (println "training" title "with" (count rows) "samples," features)
+    (best-forest title-X title-y features 500)))
 
 (defn train-forests [y train title-features]
   (reduce
@@ -43,11 +42,12 @@
 (time
   (let [[training-set test-set] (read-cleanup)
         y (map :survived training-set)
-        title-features {1 [:age :family ],
-                        2 [:age :pclass :family :embarked ],
-                        3 [:age :pclass :family :embarked ],
-                        4 [:age :pclass :family :embarked ],
-                        5 [:age :pclass :family :embarked ]}
+        title-features {1 [:age :family :embarked ],
+                        2 [:age :family :pclass :embarked ],
+                        3 [:pclass :family ],
+                        4 [:pclass :family :embarked ],
+                        5 [:age :pclass :family :embarked ],
+                        }
         forests (train-forests y training-set title-features)
         train-predict (evaluate-all forests training-set title-features)
         test-predict (evaluate-all forests test-set title-features)]
