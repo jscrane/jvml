@@ -31,15 +31,15 @@
 
 ; if title is Miss, split by age into children and "other"
 ; treat other titles as Mr/Mrs/Master/Miss based on age
-(defn- title [{:keys [name sex age] :as pass}]
+(defn- title [{:keys [name sex age family] :as pass}]
   (let [t (:title (name-parts name))
-        child? (<= age 12)]
+        child? (if (zero? age) (> family 1) (< age 13))]
     (assoc pass :title (cond
                          (= t "Mr") 1
                          (= t "Mrs") 2
                          (= t "Master") 3
                          (= t "Miss") (if child? 4 5)
-                         :else (if (= sex 1) (if child? 3 1) (if child? 4 2))))))
+                         :else (if (= sex 1) (if (< age 13) 3 1) (if child? 4 2))))))
 
 (defn cleanup-classifiers [passengers]
-  (map (comp embarked fare cabin title age sex) passengers))
+  (map (comp embarked cabin title fare age sex) passengers))
