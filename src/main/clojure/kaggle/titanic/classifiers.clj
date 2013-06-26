@@ -29,17 +29,20 @@
         parts (rest (re-matches munge-re name))]
     (zipmap [:last :title :first :unmarried ] parts)))
 
+(defn- names [pass]
+  (merge pass (name-parts (:name pass))))
+
 ; if title is Miss, split by age into children and "other"
 ; treat other titles as Mr/Mrs/Master/Miss based on age
-(defn- title [{:keys [name sex age family] :as pass}]
-  (let [t (:title (name-parts name))
-        child? (if (zero? age) (> family 1) (< age 13))]
+(defn- title [{:keys [title sex age family] :as pass}]
+  (let [child? (< age 13)
+        female-child? (if (zero? age) (> family 1) child?)]
     (assoc pass :title (cond
-                         (= t "Mr") 1
-                         (= t "Mrs") 2
-                         (= t "Master") 3
-                         (= t "Miss") (if child? 4 5)
-                         :else (if (= sex 1) (if (< age 13) 3 1) (if child? 4 2))))))
+                         (= title "Mr") 1
+                         (= title "Mrs") 2
+                         (= title "Master") 3
+                         (= title "Miss") (if female-child? 4 5)
+                         :else (if (= sex 1) (if child? 3 1) (if female-child? 4 2))))))
 
 (defn cleanup-classifiers [passengers]
-  (map (comp embarked cabin title fare age sex) passengers))
+  (map (comp embarked cabin title fare age sex names) passengers))

@@ -1,7 +1,7 @@
 (ns kaggle.titanic.data
   (:use (incanter core io stats)
         [kaggle.titanic.classifiers :only (cleanup-classifiers)]
-        [kaggle.titanic.medians :only (most-common-port median-fares median-ages)]))
+        [kaggle.titanic.medians :only (most-common-port median-fares median-ages name-counts)]))
 
 (defn- read-csv [file]
   (second (second (read-dataset file :header true))))
@@ -17,9 +17,10 @@
         port (most-common-port all-data)
         fare (median-fares all-data)
         age (median-ages all-data)
+        names (name-counts all-data)
 
-        training (shuffle (-> training-data port fare age))
-        test (-> test-data port fare age)]
+        training (shuffle (-> training-data port fare age names))
+        test (-> test-data port fare age names)]
     [training test]))
 
 (defn select-interesting [keys row]

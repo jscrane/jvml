@@ -35,3 +35,20 @@
 (defn median-ages [passengers]
   (let [ages (compute-medians passengers median-age (for [c [1 2 3] t [1 2 3 4 5]] {:pclass c :title t}))]
     (partial missing-age ages)))
+
+(defn- siblings-spouses [counts passenger]
+  (let [name-tuple (select-keys passenger [:last :first])
+        sibsp (:sibsp passenger)
+        parch (:parch passenger)
+        title (:title passenger)
+        with-spouse (if (or (= title 1) (= title 2)) (dec (counts name-tuple)) 0)
+        siblings (- sibsp with-spouse)
+        ]
+    (merge {:with-spouse with-spouse :siblings siblings} passenger)))
+
+(defn- name-count [counts passengers]
+  (map (partial siblings-spouses counts) passengers))
+
+(defn name-counts [passengers]
+  (let [counts (reduce #(assoc %1 %2 (inc (get %1 %2 0))) {} (map #(select-keys % [:last :first ]) passengers))]
+    (partial name-count counts)))

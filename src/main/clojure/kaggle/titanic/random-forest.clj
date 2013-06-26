@@ -12,10 +12,13 @@
      :error (.error brf)
      :importances (into (sorted-map) (zipmap feature-names (.importances brf)))}))
 
-(defn best-forest [X y features iter]
-  (reduce (fn [{error :error :as best} _]
-            (let [curr (random-forest 150 2 X y features) cerror (:error curr)]
-              (if (> error cerror) (do (println _ cerror) curr) best)))
+(defn best-forest [X y features trees iter]
+  (reduce (fn [{error :error :as best} i]
+            (let [curr (random-forest trees 2 X y features) cerror (:error curr)]
+              (if (> error cerror)
+                (do (println i cerror (:importances curr))
+                  curr)
+                best)))
     {:error 1} (range iter)))
 
 (defn train-forest [y train features title]
@@ -24,7 +27,7 @@
         title-y (sel (matrix y) :rows rows)
         title-X (sel X :rows rows)]
     (println "training" title "with" (count rows) "samples" features)
-    (best-forest title-X title-y features 500)))
+    (best-forest title-X title-y features 500 500)))
 
 (defn train-forests [y train title-features]
   (reduce
@@ -42,14 +45,40 @@
 (time
   (let [[training-set test-set] (read-cleanup)
         y (map :survived training-set)
-        title-features {1 [:age :embarked :parch ],
-                        2 [:embarked :parch :pclass ],
-                        3 [:pclass :sibsp ],
-                        4 [:embarked :pclass :sibsp ],
-                        5 [:embarked :parch :pclass ]}
+        title-features {1 [:age :embarked :parch :with-spouse :family],
+                        2 [:embarked :parch :pclass :siblings :family],
+                        3 [:pclass :siblings],
+                        4 [:embarked :pclass :siblings :family],
+                        5 [:age :embarked :pclass :family]
+                        }
         forests (train-forests y training-set title-features)
         train-predict (evaluate-all forests training-set title-features)
         test-predict (evaluate-all forests test-set title-features)]
     (println "error:" (reverse (map (fn [[k m]] [k (:error m) (:importances m)]) forests)))
     (println "training accuracy:" (double (accuracy train-predict y)))
     (submit test-predict)))
+
+(comment
+(let [[training-set test-set] (read-cleanup)
+      k [:age :embarked :parch :pclass :with-spouse :siblings :title]
+      Xtrain (select-features k training-set)
+      Xtest (select-features k test-set)
+      ytrain (select-features [:survived] training-set)
+      f (best-forest Xtrain ytrain k 100 50)
+      test-predict ((:evaluate f) Xtest)]
+  (println "error:" (:error f) (:importances f))
+  (println "training accuracy:" (double (accuracy ((:evaluate f) Xtrain) (map int ytrain))))
+  (submit test-predict))
+  )
+
+;; single forest
+(comment
+  (let [[training-set test-set] (read-cleanup)
+        k [:age :embarked :parch :pclass :sibsp :title]
+       Xtrain (select-features k training-set)
+       Xtest (select-features k test-set)
+       ytrain (select-features [:survived] training-set)
+       f (random-forest 1000 2 Xtrain ytrain k)]
+    (println "training accuracy:" (double (accuracy ((:evaluate f) Xtrain) (map int ytrain))))
+    (submit test-predict))
+  )
