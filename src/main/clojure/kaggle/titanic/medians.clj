@@ -4,51 +4,44 @@
 ;
 ; computing median values and adding where missing
 ;
-(defn- missing-port [port passengers]
-  (map #(if (pos? (:embarked? %)) % (assoc % :embarked port)) passengers))
-
-(defn most-common-port [passengers]
-  (let [ports (map :embarked (filter (comp pos? :embarked? ) passengers))]
-    (partial missing-port (int (median ports)))))
+(defn- most-common-port [passengers]
+  (let [port (median (map :embarked (filter (comp pos? :embarked? ) passengers)))]
+    (fn [pass]
+      (if (pos? (:embarked? pass))
+        pass
+        (assoc pass :embarked port)))))
 
 (defn- compute-medians [passengers f keys]
   (reduce (fn [m k] (assoc m k (f passengers k))) {} keys))
 
 (defn- median-fare [passengers {pclass :pclass embarked :embarked}]
-  (let [fares (map :fare (filter #(and (= pclass (:pclass %)) (= embarked (:embarked %))) passengers))]
-    (median fares)))
+  (median (map :fare (filter #(and (= pclass (:pclass %)) (= embarked (:embarked %))) passengers))))
 
-(defn- missing-fare [fares passengers]
-  (map #(if (pos? (:fare? %)) % (assoc % :fare (fares (select-keys % [:pclass :embarked ])))) passengers))
-
-(defn median-fares [passengers]
+(defn- median-fares [passengers]
   (let [fares (compute-medians passengers median-fare (for [e [0 1 2] c [1 2 3]] {:pclass c :embarked e}))]
-    (partial missing-fare fares)))
+    (fn [pass]
+      (if (pos? (:fare? pass))
+        pass
+        (assoc pass :fare (fares (select-keys pass [:pclass :embarked ])))))))
 
 (defn- median-age [passengers {title :title pclass :pclass}]
-  (let [ages (map :age (filter #(and (= pclass (:pclass %)) (= title (:title %))) passengers))]
-    (median ages)))
+  (median (map :age (filter #(and (= pclass (:pclass %)) (= title (:title %))) passengers))))
 
-(defn- missing-age [ages passengers]
-  (map #(if (pos? (:age? %)) % (assoc % :age (ages (select-keys % [:title :pclass])))) passengers))
-
-(defn median-ages [passengers]
+(defn- median-ages [passengers]
   (let [ages (compute-medians passengers median-age (for [c [1 2 3] t [1 2 3 4 5]] {:pclass c :title t}))]
-    (partial missing-age ages)))
+    (fn [pass]
+      (if (pos? (:age? pass))
+        pass
+        (assoc pass :age (ages (select-keys pass [:title :pclass ])))))))
 
-(defn- siblings-spouses [counts passenger]
-  (let [name-tuple (select-keys passenger [:last :first])
-        sibsp (:sibsp passenger)
-        parch (:parch passenger)
-        title (:title passenger)
-        with-spouse (if (or (= title 1) (= title 2)) (dec (counts name-tuple)) 0)
-        siblings (- sibsp with-spouse)
-        ]
-    (merge {:with-spouse with-spouse :siblings siblings} passenger)))
-
-(defn- name-count [counts passengers]
-  (map (partial siblings-spouses counts) passengers))
-
-(defn name-counts [passengers]
+(defn- name-counts [passengers]
   (let [counts (reduce #(assoc %1 %2 (inc (get %1 %2 0))) {} (map #(select-keys % [:last :first ]) passengers))]
-    (partial name-count counts)))
+    (fn [pass]
+      (let [name-tuple (select-keys pass [:last :first ])
+            {:keys [sibsp parch title]} pass
+            with-spouse (if (or (= title 1) (= title 2)) (dec (counts name-tuple)) 0)
+            siblings (- sibsp with-spouse)]
+        (merge {:with-spouse with-spouse :siblings siblings} pass)))))
+
+(defn cleanup-missing [passengers]
+  (apply comp (map #(% passengers) [name-counts median-ages median-fares most-common-port])))

@@ -21,17 +21,17 @@
                 best)))
     {:error 1} (range iter)))
 
-(defn train-forest [y train features title]
+(defn train-forest-for-title [title y train features trees iter]
   (let [X (select-features features train)
         rows (vec (filter identity (map-indexed #(if (= (int %2) title) %1) (select-features [:title ] train))))
         title-y (sel (matrix y) :rows rows)
         title-X (sel X :rows rows)]
     (println "training" title "with" (count rows) "samples" features)
-    (best-forest title-X title-y features 500 500)))
+    (best-forest title-X title-y features trees iter)))
 
-(defn train-forests [y train title-features]
+(defn train-forests [y train title-features trees iter]
   (reduce
-    (fn [m [title features]] (assoc m title (train-forest y train features title)))
+    (fn [m [title features]] (assoc m title (train-forest-for-title title y train features trees iter)))
     {} title-features))
 
 (defn evaluate-all [forests data title-features]
@@ -45,13 +45,13 @@
 (time
   (let [[training-set test-set] (read-cleanup)
         y (map :survived training-set)
-        title-features {1 [:age :embarked :parch :with-spouse :family],
-                        2 [:embarked :parch :pclass :siblings :family],
-                        3 [:pclass :siblings],
-                        4 [:embarked :pclass :siblings :family],
-                        5 [:age :embarked :pclass :family]
+        title-features {1 [:age :embarked :family :parch ],
+                        2 [:embarked :parch :pclass ],
+                        3 [:pclass :siblings ],
+                        4 [:embarked :siblings ],
+                        5 [:embarked :family :pclass ]
                         }
-        forests (train-forests y training-set title-features)
+        forests (train-forests y training-set title-features 500 300)
         train-predict (evaluate-all forests training-set title-features)
         test-predict (evaluate-all forests test-set title-features)]
     (println "error:" (reverse (map (fn [[k m]] [k (:error m) (:importances m)]) forests)))
@@ -59,26 +59,26 @@
     (submit test-predict)))
 
 (comment
-(let [[training-set test-set] (read-cleanup)
-      k [:age :embarked :parch :pclass :with-spouse :siblings :title]
-      Xtrain (select-features k training-set)
-      Xtest (select-features k test-set)
-      ytrain (select-features [:survived] training-set)
-      f (best-forest Xtrain ytrain k 100 50)
-      test-predict ((:evaluate f) Xtest)]
-  (println "error:" (:error f) (:importances f))
-  (println "training accuracy:" (double (accuracy ((:evaluate f) Xtrain) (map int ytrain))))
-  (submit test-predict))
+  (let [[training-set test-set] (read-cleanup)
+        features [:age :embarked :parch :pclass :with-spouse :siblings :title ]
+        Xtrain (select-features features training-set)
+        Xtest (select-features features test-set)
+        ytrain (select-features [:survived ] training-set)
+        forest (best-forest Xtrain ytrain features 100 50)
+        test-predict ((:evaluate forest) Xtest)]
+    (println "error:" (:error forest) (:importances forest))
+    (println "training accuracy:" (double (accuracy ((:evaluate forest) Xtrain) (map int ytrain))))
+    (submit test-predict))
   )
 
 ;; single forest
 (comment
   (let [[training-set test-set] (read-cleanup)
-        k [:age :embarked :parch :pclass :sibsp :title]
-       Xtrain (select-features k training-set)
-       Xtest (select-features k test-set)
-       ytrain (select-features [:survived] training-set)
-       f (random-forest 1000 2 Xtrain ytrain k)]
-    (println "training accuracy:" (double (accuracy ((:evaluate f) Xtrain) (map int ytrain))))
+        features [:age :embarked :parch :pclass :sibsp :title ]
+        Xtrain (select-features features training-set)
+        Xtest (select-features features test-set)
+        ytrain (select-features [:survived ] training-set)
+        forest (random-forest 1000 2 Xtrain ytrain features)]
+    (println "training accuracy:" (double (accuracy ((:evaluate forest) Xtrain) (map int ytrain))))
     (submit test-predict))
   )
