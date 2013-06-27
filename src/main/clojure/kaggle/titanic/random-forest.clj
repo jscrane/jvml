@@ -45,16 +45,17 @@
 (time
   (let [[training-set test-set] (read-cleanup)
         y (map :survived training-set)
-        title-features {1 [:age :embarked :family :parch ],
+        title-features {1 [:age :parch ],
                         2 [:embarked :parch :pclass ],
-                        3 [:pclass :siblings ],
-                        4 [:embarked :siblings ],
-                        5 [:embarked :family :pclass ]
-                        }
-        forests (train-forests y training-set title-features 500 300)
+                        3 [:age :siblings ],
+                        4 [:pclass :siblings ],
+                        5 [:embarked :family :pclass ]}
+        forests (train-forests y training-set title-features 200 500)
         train-predict (evaluate-all forests training-set title-features)
         test-predict (evaluate-all forests test-set title-features)]
-    (println "error:" (reverse (map (fn [[k m]] [k (:error m) (:importances m)]) forests)))
+    (dorun (for [k (keys forests)]
+             (let [f (forests k)]
+               (println k "error:" (:error f) (:importances f)))))
     (println "training accuracy:" (double (accuracy train-predict y)))
     (submit test-predict)))
 

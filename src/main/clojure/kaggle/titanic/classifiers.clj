@@ -21,7 +21,8 @@
     (assoc pass :age? age? :age age)))
 
 (defn- cabin [{c :cabin :as pass}]
-  (assoc pass :cabin? (if (= "" c) 0 1)))
+  (let [c? (= "" c)]
+    (assoc pass :cabin? (if c? 0 1) :deck (if c? 0 (inc (- (int (first c)) (int \A)))))))
 
 ; "Beckwith, Mrs. Richard Leonard (Sallie Monypeny)"
 (defn- name-parts [name]
@@ -32,17 +33,19 @@
 (defn- names [pass]
   (merge pass (name-parts (:name pass))))
 
-; if title is Miss, split by age into children and "other"
-; treat other titles as Mr/Mrs/Master/Miss based on age
-(defn- title [{:keys [title sex age family] :as pass}]
+; if title is Miss, split by age into children and Ms
+; treat other titles as Mr/Mrs and flag if age is incompatible with title
+(defn- title [{:keys [title sex age age? family] :as pass}]
   (let [child? (< age 13)
-        female-child? (if (zero? age) (> family 1) child?)]
-    (assoc pass :title (cond
-                         (= title "Mr") 1
-                         (= title "Mrs") 2
-                         (= title "Master") 3
-                         (= title "Miss") (if female-child? 4 5)
-                         :else (if (= sex 1) (if child? 3 1) (if female-child? 4 2))))))
+        female-child? (if (zero? age) (> family 1) child?)
+        nt (cond
+             (= title "Mr") 1
+             (= title "Mrs") 2
+             (= title "Master") 3
+             (= title "Miss") (if female-child? 4 5)
+             (= title "Ms") 5
+             :else (if (= sex 1) 1 2))]
+    (assoc pass :otitle title :title nt :age? (if (and (or (= nt 1) (= nt 2)) child?) 0 age?))))
 
 (defn cleanup-classifiers [passengers]
   (map (comp embarked cabin title fare age sex names) passengers))

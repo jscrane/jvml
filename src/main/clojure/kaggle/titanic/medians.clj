@@ -30,9 +30,9 @@
 (defn- median-ages [passengers]
   (let [ages (compute-medians passengers median-age (for [c [1 2 3] t [1 2 3 4 5]] {:pclass c :title t}))]
     (fn [pass]
-      (if (pos? (:age? pass))
-        pass
-        (assoc pass :age (ages (select-keys pass [:title :pclass ])))))))
+      (if (zero? (:age? pass))
+        (assoc pass :age (ages (select-keys pass [:title :pclass ])))
+        pass))))
 
 (defn- name-counts [passengers]
   (let [counts (reduce #(assoc %1 %2 (inc (get %1 %2 0))) {} (map #(select-keys % [:last :first ]) passengers))]
