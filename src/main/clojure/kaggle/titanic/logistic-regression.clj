@@ -19,16 +19,18 @@
         [(conj training-errors train) (conj validation-errors val)]))
     [[] []] (map #(vector (matrix (take % X)) (matrix (take % y))) ords)))
 
-(let [{:keys [y yval X Xval Xtest]} (init 50 #{:age :family :pclass :sex :title})
+(let [ncv 150
+      {:keys [y yval X Xval Xtest]} (init ncv [:age2 :embarked :family :pclass :siblings :title ])
       Xi (add-intercept X)
       Xval (add-intercept Xval)
       Xtest (add-intercept Xtest)
-      ords (range 50 (inc (nrow Xi)) 50)
-      lambda 10
+      ords (range ncv (inc (nrow Xi)) ncv)
+      lambda 5
       [training validation] (learning-curves ords Xi y Xval yval lambda)
       theta (train-logistic-regression Xi y lambda)]
-  (println "training accuracy: " (double (accuracy (prediction (logistic-hypothesis theta Xi)) y)))
-  (println "validation accuracy: " (double (accuracy (prediction (logistic-hypothesis theta Xval)) yval)))
+  (println "training accuracy:" (double (accuracy (prediction (logistic-hypothesis theta Xi)) y)))
+  (println "validation accuracy:" (double (accuracy (prediction (logistic-hypothesis theta Xval)) yval)))
+  (println "weights:" (rest (to-list theta)))
   (submit (prediction (logistic-hypothesis theta Xtest)))
   (doto
     (xy-plot ords training :title "Logistic Regression Learning Curve"

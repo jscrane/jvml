@@ -18,7 +18,7 @@
 (defn- age [{a :age :as pass}]
   (let [age (if (= "" a) 0 a)
         age? (if (zero? age) 0 1)]
-    (assoc pass :age? age? :age age)))
+    (assoc pass :age? age? :age age :age2 (* age age))))
 
 (defn- cabin [{c :cabin :as pass}]
   (let [c? (= "" c)]

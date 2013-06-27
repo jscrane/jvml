@@ -31,7 +31,8 @@
   (let [ages (compute-medians passengers median-age (for [c [1 2 3] t [1 2 3 4 5]] {:pclass c :title t}))]
     (fn [pass]
       (if (zero? (:age? pass))
-        (assoc pass :age (ages (select-keys pass [:title :pclass ])))
+        (let [age (ages (select-keys pass [:title :pclass ]))]
+          (assoc pass :age age :age2 (* age age)))
         pass))))
 
 (defn- name-counts [passengers]
